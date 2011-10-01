@@ -1,0 +1,122 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource2.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Polish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_PLK)
+#ifdef _WIN32
+LANGUAGE LANG_POLISH, SUBLANG_DEFAULT
+#pragma code_page(1250)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource2.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN DIALOGEX 0, 0, 495, 438
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue"
+CLASS "MKGAMES_MAIN"
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    LTEXT           "Tytu³",IDC_STATIC_TITLE,7,14,18,8
+    LTEXT           "Wydawca",IDC_STATIC_PUBLISHER,7,27,33,8
+    LTEXT           "Dystrybutor",IDC_STATIC_DISTR,7,42,36,8
+    LTEXT           "Producent",IDC_STATIC_PROD,7,56,34,8
+    LTEXT           "Gatunek",IDC_STATIC_GENRE,7,70,28,8
+    LTEXT           "Cena",IDC_STATIC_PRICE,7,98,18,8
+    LTEXT           "Nr Kat",IDC_STATIC_NR_KAT,7,111,21,8
+    EDITTEXT        IDC_EDIT_TYTUL,45,12,225,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PUBLISHER,45,25,163,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DISTRIBUTOR,45,38,163,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PRODUCER,45,52,163,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_GENRE,45,66,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_PRICE,45,94,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_NRKAT,45,107,163,12,ES_AUTOHSCROLL
+    LTEXT           "(C) Copyright Marcin Ka³at 2011.",IDC_STATIC,7,423,104,8
+    CONTROL         "|<",IDC_BUTTON_FIRST,"Button",BS_OWNERDRAW | WS_TABSTOP,7,398,23,21
+    CONTROL         "<",IDC_BUTTON_PREV,"Button",BS_OWNERDRAW | WS_TABSTOP,33,398,24,21
+    CONTROL         ">",IDC_BUTTON_NEXT,"Button",BS_OWNERDRAW | WS_TABSTOP,61,398,26,21
+    CONTROL         ">|",IDC_BUTTON_LAST,"Button",BS_OWNERDRAW | WS_TABSTOP,91,398,26,21
+    CONTROL         "Nowy",IDC_BUTTON_NEW,"Button",BS_OWNERDRAW | WS_TABSTOP,172,398,50,21
+    CONTROL         "Zapisz",IDC_BUTTON_SAVE,"Button",BS_OWNERDRAW | WS_TABSTOP,229,398,50,21
+    CONTROL         "Usuñ",IDC_BUTTON_DEL,"Button",BS_OWNERDRAW | WS_TABSTOP,314,398,52,21
+    LTEXT           "Rekord",IDC_STATIC_REC,7,380,24,8
+    EDITTEXT        IDC_EDIT_RECNO,36,376,32,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "z",IDC_STATIC_RECOF,69,380,8,8
+    EDITTEXT        IDC_EDIT_RECC,78,376,40,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "",IDC_RICHEDIT_DESC,"RichEdit20A",ES_AUTOHSCROLL | WS_BORDER | WS_TABSTOP,7,192,263,180
+    LTEXT           "Opis :",IDC_STATIC_DESC,7,182,19,8
+    LTEXT           "Noœnik",IDC_STATIC_MEDIUM,7,138,23,8
+    COMBOBOX        IDC_COMBO_MEDIUM,45,134,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Platforma",IDC_STATIC_PLATFORM,7,124,30,8
+    COMBOBOX        IDC_COMBO_PLATFORM,45,120,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC_FRONTSIDE,"Static",SS_BLACKFRAME,369,7,119,139
+    LTEXT           "Ocena : ",IDC_STATIC_GRADE,7,84,28,8
+    COMBOBOX        IDC_COMBO_GRADE,45,80,75,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_TAB_INFO,"SysTabControl32",0x0,290,154,198,234
+    PUSHBUTTON      "Za³aduj",IDC_BUTTON_LOADPIC,314,106,52,14
+    PUSHBUTTON      "Usuñ",IDC_BUTTON_DELPIC,314,125,52,14
+    LTEXT           "WWW",IDC_STATIC_WWW,7,152,23,8
+    EDITTEXT        IDC_EDIT_WWW,45,148,163,12,ES_AUTOHSCROLL
+    CONTROL         "Singleplayer",IDC_CHECK_SINGLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,216,27,54,10
+    CONTROL         "Multiplayer",IDC_CHECK_MULTI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,216,40,49,10
+    CONTROL         "Dodatek",IDC_CHECK_EXPANSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,216,54,43,10
+    LTEXT           "Premiera",IDC_STATIC_PUB_DATE,7,166,38,8
+    EDITTEXT        IDC_EDIT_PUBDATE,45,162,163,12,ES_AUTOHSCROLL
+END
+
+#endif    // Polish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

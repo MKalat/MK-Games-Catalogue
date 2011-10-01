@@ -1,0 +1,497 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMB
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Polish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_PLK)
+#ifdef _WIN32
+LANGUAGE LANG_POLISH, SUBLANG_DEFAULT
+#pragma code_page(1250)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+100 DIALOGEX 0, 0, 495, 450
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    LTEXT           "Tytu³",1000,7,14,18,8
+    LTEXT           "Wydawca",1001,7,27,33,8
+    LTEXT           "Dystrybutor",1002,7,42,36,8
+    LTEXT           "Producent",1003,7,56,34,8
+    LTEXT           "Gatunek",1004,7,70,28,8
+    LTEXT           "Cena",1005,7,98,18,8
+    LTEXT           "Nr Kat",1006,7,111,21,8
+    EDITTEXT        1007,45,12,225,12,ES_AUTOHSCROLL
+    EDITTEXT        1008,45,25,163,12,ES_AUTOHSCROLL
+    EDITTEXT        1009,45,38,163,12,ES_AUTOHSCROLL
+    EDITTEXT        1010,45,52,163,12,ES_AUTOHSCROLL
+    COMBOBOX        1011,45,66,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        1012,45,94,56,12,ES_AUTOHSCROLL
+    EDITTEXT        1013,45,107,163,12,ES_AUTOHSCROLL
+    LTEXT           "(C) Copyright Marcin Ka³at 2011.",-1,7,423,104,8
+    PUSHBUTTON      "|<",1014,7,398,23,21,BS_ICON | NOT WS_TABSTOP
+    PUSHBUTTON      "<",1015,33,398,24,21,BS_ICON | NOT WS_TABSTOP
+    PUSHBUTTON      ">",1016,61,398,26,21,BS_ICON | NOT WS_TABSTOP
+    PUSHBUTTON      ">|",1017,91,398,26,21,BS_ICON | NOT WS_TABSTOP
+    PUSHBUTTON      "Nowy",1018,172,398,50,21,NOT WS_TABSTOP
+    PUSHBUTTON      "Zapisz",1019,229,398,50,21,NOT WS_TABSTOP
+    PUSHBUTTON      "Usuñ",1020,314,398,52,21,NOT WS_TABSTOP
+    LTEXT           "Rekord",1021,7,380,24,8
+    EDITTEXT        1022,36,376,32,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "z",1023,69,380,8,8
+    EDITTEXT        1024,78,376,40,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "",1025,"RichEdit20W",ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_BORDER,7,192,263,180
+    LTEXT           "Opis :",1026,7,182,19,8
+    LTEXT           "Noœnik",1027,7,138,23,8
+    COMBOBOX        1028,45,134,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Platforma",1029,7,124,30,8
+    COMBOBOX        1030,45,120,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",1031,"Static",SS_BLACKFRAME,369,7,119,139
+    LTEXT           "Ocena : ",1032,7,84,28,8
+    COMBOBOX        1033,45,80,75,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",1035,"SysTabControl32",WS_CLIPSIBLINGS,279,147,213,248
+    PUSHBUTTON      "Za³aduj",1036,314,106,52,14
+    PUSHBUTTON      "Usuñ",1037,314,125,52,14
+    LTEXT           "WWW",1038,7,152,23,8
+    EDITTEXT        1039,45,148,163,12,ES_AUTOHSCROLL
+    CONTROL         "Singleplayer",1040,"Button",BS_AUTOCHECKBOX,216,27,54,10
+    CONTROL         "Multiplayer",1041,"Button",BS_AUTOCHECKBOX,216,40,49,10
+    CONTROL         "Dodatek",1042,"Button",BS_AUTOCHECKBOX,216,54,43,10
+    LTEXT           "Premiera",1043,7,166,38,8
+    EDITTEXT        1044,45,162,163,12,ES_AUTOHSCROLL
+END
+
+130 DIALOGEX 0, 0, 198, 234
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    CONTROL         "",10102,"RichEdit20W",WS_BORDER | WS_HSCROLL | WS_TABSTOP | 0xc4,7,18,184,188,WS_EX_LEFTSCROLLBAR
+    LTEXT           "Lista kodów",10101,7,7,39,8
+    PUSHBUTTON      "Wyczyœæ",10103,141,213,50,14
+END
+
+131 DIALOGEX 0, 0, 198, 234
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    LTEXT           "WWW",-1,12,17,23,8
+    GROUPBOX        "Producent",-1,7,7,184,65
+    LTEXT           "E - mail",-1,12,31,24,8
+    LTEXT           "Adres",-1,12,43,19,8
+    LTEXT           "Telefon",-1,12,57,25,8
+    EDITTEXT        10201,42,15,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10202,42,28,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10203,42,42,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10204,42,55,141,12,ES_AUTOHSCROLL
+    GROUPBOX        "Wydawca",-1,7,74,184,65
+    LTEXT           "WWW",-1,12,86,23,8
+    LTEXT           "E - mail",-1,12,99,24,8
+    LTEXT           "Adres",-1,12,112,19,8
+    LTEXT           "Telefon",-1,12,124,25,8
+    EDITTEXT        10205,42,83,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10206,42,96,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10207,42,109,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10208,42,122,141,12,ES_AUTOHSCROLL
+    GROUPBOX        "Dystrybutor",-1,7,143,184,65
+    LTEXT           "WWW",-1,12,154,23,8
+    LTEXT           "E - mail",-1,12,167,24,8
+    LTEXT           "Adres",-1,12,180,19,8
+    LTEXT           "Telefon",-1,12,193,25,8
+    EDITTEXT        10209,42,151,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10210,42,164,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10211,42,177,141,12,ES_AUTOHSCROLL
+    EDITTEXT        10212,42,190,141,12,ES_AUTOHSCROLL
+END
+
+132 DIALOGEX 0, 0, 198, 234
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    CONTROL         "",10300,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,18,184,178
+    LTEXT           "Lista dodatków",-1,7,7,49,8
+    PUSHBUTTON      "Nowy",10301,7,199,50,14
+    PUSHBUTTON      "Edytuj",10302,62,199,50,14
+    PUSHBUTTON      "Usuñ",10303,141,199,50,14
+END
+
+133 DIALOGEX 0, 0, 198, 234
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Lista modów",-1,7,7,40,8
+    CONTROL         "",10400,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,17,184,179
+    PUSHBUTTON      "Nowy",10401,7,199,50,14
+    PUSHBUTTON      "Edytuj",10402,63,199,50,14
+    PUSHBUTTON      "Usuñ",10403,141,199,50,14
+END
+
+134 DIALOGEX 0, 0, 316, 113
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue"
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    DEFPUSHBUTTON   "OK",10505,205,92,50,14
+    PUSHBUTTON      "Anuluj",10506,259,92,50,14
+    LTEXT           "Nazwa",-1,7,20,22,8
+    EDITTEXT        10500,61,17,218,12,ES_AUTOHSCROLL
+    LTEXT           "Dla wersji gry",-1,7,34,44,8
+    EDITTEXT        10501,61,31,218,12,ES_AUTOHSCROLL
+    LTEXT           "Wersja moda",-1,7,46,43,8
+    EDITTEXT        10502,61,44,217,12,ES_AUTOHSCROLL
+    LTEXT           "Ocena",-1,7,60,22,8
+    EDITTEXT        10503,61,58,217,12,ES_AUTOHSCROLL
+    LTEXT           "WWW",-1,7,74,23,8
+    EDITTEXT        10504,61,71,217,12,ES_AUTOHSCROLL
+    LTEXT           "Podaj dane modyfikacji",-1,7,7,74,8
+END
+
+135 DIALOGEX 0, 0, 239, 131
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue"
+FONT 8, "Microsoft Sans Serif", 400, 0, 0xEE
+BEGIN
+    PUSHBUTTON      "OK",10607,125,110,50,14
+    PUSHBUTTON      "Anuluj",10608,182,110,50,14
+    LTEXT           "Podaj dane dodatku",-1,7,7,65,8
+    LTEXT           "Nazwa",-1,7,20,23,8
+    LTEXT           "Cena",-1,7,34,18,8
+    EDITTEXT        10600,48,19,162,12,ES_AUTOHSCROLL
+    EDITTEXT        10601,48,32,162,12,ES_AUTOHSCROLL
+    LTEXT           "WWW",-1,7,48,23,8
+    EDITTEXT        10602,48,45,162,12,ES_AUTOHSCROLL
+    LTEXT           "Ocena",-1,7,60,22,8
+    EDITTEXT        10603,48,58,162,12,ES_AUTOHSCROLL
+    LTEXT           "Multiplayer",-1,7,72,34,8
+    EDITTEXT        10605,48,71,162,12,ES_AUTOHSCROLL
+    LTEXT           "Singleplayer",-1,7,85,39,8
+    EDITTEXT        10606,48,83,162,12,ES_AUTOHSCROLL
+END
+
+136 DIALOGEX 0, 0, 316, 134
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",10705,205,113,50,14
+    PUSHBUTTON      "Anuluj",10706,259,113,50,14
+    GROUPBOX        "Aktualizacje",-1,7,7,302,44
+    CONTROL         "W³¹cz auto aktualizacje",10700,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,18,91,10
+    COMBOBOX        10701,103,29,83,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Sprawdzaj aktualizacje co ",-1,15,31,85,8
+    COMBOBOX        10702,37,57,145,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Jêzyk",10707,14,59,19,8
+    CONTROL         "Automatycznie zapisuj zmiany w bazie danych przy wychodzeniu",10703,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,75,222,10
+    CONTROL         "Potwierdzaj zamykanie aplikacji",10704,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,89,115,10
+END
+
+103 DIALOGEX 0, 0, 225, 174
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "O MK Games Catalogue"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            128,-1,14,14,20,20
+    LTEXT           "MK Games Catalogue, Version 1.0",-1,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C)  Marcin Kalat 2011",-1,42,26,114,8
+    DEFPUSHBUTTON   "OK",1,168,153,50,14,WS_GROUP
+    LTEXT           "Program do katalogowania gier komputerowych. Umozliwia zapisanie katalogowych informacji o danej grze, a takze kodów do danej gry. ",-1,42,41,165,78
+END
+
+IDD_SZUKAJ DIALOGEX 0, 0, 256, 295
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue - Wyszukaj"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "SZUKAJ",BUTTON_SZUKAJ,189,47,50,14
+    LTEXT           "Szukaj",IDC_STATIC,7,9,22,8
+    EDITTEXT        IDC_EDIT_SZFRAZA,41,7,180,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_SZPOLE,41,30,123,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Pole",IDC_STATIC,7,33,14,8
+    CONTROL         "",IDC_LIST_WYNIKI,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,70,230,218
+    LTEXT           "Wyniki",IDC_STATIC,7,56,22,8
+END
+
+IDD_MANAGEDB DIALOGEX 0, 0, 261, 218
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue - Zarz¹dzaj DB"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_LIST_DBS,7,19,164,184,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Bazy danych :",IDC_STATIC,7,7,46,8
+    PUSHBUTTON      "Nowa",IDC_BUTTON_NEW,187,19,50,14
+    PUSHBUTTON      "Wybierz",IDC_BUTTON_SEL,187,38,50,14
+    PUSHBUTTON      "Usuñ",IDC_BUTTON_DEL,187,58,50,14
+    PUSHBUTTON      "Anuluj",IDC_BUTTON_EXIT,187,88,50,14
+END
+
+IDD_NEWDB DIALOGEX 0, 0, 196, 63
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MK Games Catalogue - Dodaj DB"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,84,42,50,14
+    PUSHBUTTON      "Anuluj",IDCANCEL,139,42,50,14
+    LTEXT           "Nazwa",IDC_STATIC,7,18,22,8
+    EDITTEXT        IDC_EDIT_NAME,37,14,152,12,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    130, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 191
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    131, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 191
+        VERTGUIDE, 12
+        VERTGUIDE, 42
+        VERTGUIDE, 183
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    132, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 191
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    133, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 191
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 227
+    END
+
+    134, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        VERTGUIDE, 61
+        VERTGUIDE, 278
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
+    END
+
+    135, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 232
+        VERTGUIDE, 48
+        VERTGUIDE, 210
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 124
+    END
+
+    136, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        VERTGUIDE, 14
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 127
+    END
+
+    IDD_SZUKAJ, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 249
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 288
+        HORZGUIDE, 17
+    END
+
+    IDD_MANAGEDB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        VERTGUIDE, 187
+        VERTGUIDE, 237
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 211
+    END
+
+    IDD_NEWDB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 189
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+        HORZGUIDE, 26
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+1 VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041504b0"
+        BEGIN
+            VALUE "CompanyName", "Marcin Ka³at"
+            VALUE "FileDescription", "MK Games Catalogue"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "MKGAMESCATALOGUE"
+            VALUE "LegalCopyright", "Copyright (C) Marcin Ka³at 2011"
+            VALUE "OriginalFilename", "MKGamesCatalogue.exe"
+            VALUE "ProductName", "MK Games Catalogue"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x415, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+107                     ICON                    "MK Games Catalogue.ico"
+108                     ICON                    "small.ico"
+IDI_ICON1               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\new_16x16.ico"
+IDI_ICON2               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\del_16x16.ico"
+IDI_ICON3               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\first_16x16.ico"
+IDI_ICON4               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\last_16x16.ico"
+IDI_ICON5               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\next_16x16.ico"
+IDI_ICON6               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\prev_16x16.ico"
+IDI_ICON7               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\save_16x16.ico"
+IDI_ICON8               ICON                    "D:\\RYSUNKI\\MK_LOGO.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+109 MENU 
+BEGIN
+    POPUP "&Plik"
+    BEGIN
+        MENUITEM "Zarz¹dzaj bazami danych",     ID_PLIK_ZARZ32782
+        MENUITEM "Wyszukaj",                    ID_PLIK_WY
+        MENUITEM SEPARATOR
+        MENUITEM "&Nowy Rekord",                32771
+        MENUITEM "&Zapisz Rekord",              32772
+        MENUITEM "&Usun Rekord",                32773
+        MENUITEM SEPARATOR
+        POPUP "Eksportuj"
+        BEGIN
+            MENUITEM "Plik tekstowy",               32780
+        END
+        POPUP "Importuj"
+        BEGIN
+            MENUITEM "Plik tekstowy",               32781
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Ustawienia",                  32777
+        MENUITEM "&Wyjdz",                      105
+    END
+    POPUP "&Pomoc"
+    BEGIN
+        MENUITEM "&O programie ...",            104
+    END
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMB\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Polish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
