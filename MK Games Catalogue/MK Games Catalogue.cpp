@@ -50,6 +50,7 @@ TCHAR db_path[550] = TEXT("db\\");
 TCHAR MAIN_FN_PATH[1000];
 TCHAR EXP_FN_PATH[1000];
 TCHAR MODS_FN_PATH[1000];
+int edit_id = -1;
 
  
 
@@ -1224,7 +1225,15 @@ INT_PTR CALLBACK EditMody_WndProc(HWND hWnd, UINT message,WPARAM wParam, LPARAM 
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		if (edit_id != -1)
+		{
+			SetWindowText(GetDlgItem(hWnd,10500),mods_db_arr[edit_id].nazwa);
+			SetWindowText(GetDlgItem(hWnd,10501),mods_db_arr[edit_id].wersja_gry);
+			SetWindowText(GetDlgItem(hWnd,10502),mods_db_arr[edit_id].wersja_moda);
+			SetWindowText(GetDlgItem(hWnd,10503),mods_db_arr[edit_id].ocena);
+			SetWindowText(GetDlgItem(hWnd,10504),mods_db_arr[edit_id].www);
 
+		}
 		return (INT_PTR)TRUE;
 	case WM_COMMAND:
 		if (LOWORD(wParam) == 10505 || LOWORD(wParam) == 10506)
@@ -1253,6 +1262,16 @@ INT_PTR CALLBACK EditDodatki_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		if (edit_id != -1)
+		{
+			SetWindowText(GetDlgItem(hWnd,10600),exp_db_arr[edit_id].nazwa);
+			SetWindowText(GetDlgItem(hWnd,10601),exp_db_arr[edit_id].cena);
+			SetWindowText(GetDlgItem(hWnd,10602),exp_db_arr[edit_id].www);
+			SetWindowText(GetDlgItem(hWnd,10603),exp_db_arr[edit_id].ocena);
+			SetWindowText(GetDlgItem(hWnd,10605),exp_db_arr[edit_id].multi);
+			SetWindowText(GetDlgItem(hWnd,10606),exp_db_arr[edit_id].single);
+
+		}
 
 		return (INT_PTR)TRUE;
 	case WM_COMMAND:
@@ -1294,22 +1313,40 @@ int GetLastIDMody()
 }
 void Prep_Edit_Mody()
 {
-//TODO: napisaæ kopiowanie zawartoœci edytowanego rekordu db_mody
+	for int x = 0; x < mods_db_arr.size(); x++)
+	{
+		if (SendMessage(GetDlgItem(TAB_MODY,10400),LVM_GETITEMSTATE,(WPARAM)x,(LPARAM)(UINT)LVIS_SELECTED) == LVIS_SELECTED)
+		{
+			edit_id = x;
+			return;
+		}
+
+	}
 
 }
 
 void Edit_Mody()
 {
-	//TODO: Napisaæ kopiowanie wyedytowanego rekordu db_mody z powrotem do list_View i tablicy
-	// update-uj list view oraz tablicê, potem refresh
-
+	mods_db_arr[edit_id].nazwa = mods_db.nazwa;
+	mods_db_arr[edit_id].ocena = mods_db.ocena;
+	mods_db_arr[edit_id].wersja_gry = mods_db.wersja_gry;
+	mods_db_arr[edit_id].wersja_moda = mods_db.wersja_moda;
+	mods_db_arr[edit_id].www = mods_db.www;
 	Refresh_Mods();
+	edit_id = -1;
 }
 
 void Prep_Edit_Dod()
 {
-//TODO: napisaæ kopiowanie z db_mody arr rekordu przed edycj¹ na formularz edycji i do tymczasowej struktury
+	for int x = 0; x < exp_db_arr.size(); x++)
+	{
+		if (SendMessage(GetDlgItem(TAB_EXP,10300),LVM_GETITEMSTATE,(WPARAM)x,(LPARAM)(UINT)LVIS_SELECTED) == LVIS_SELECTED)
+		{
+			edit_id = x;
+			return;
+		}
 
+	}
 }
 
 void Add_Dod()
@@ -1343,10 +1380,14 @@ void Add_Mody()
 
 void Edit_Dod()
 {
-	//TODO: Napisaæ kopiowanie wyedytowanego rekordu z tymczasej struktury z powrotem do listView_dodatki i db_dodaki arr
-// update-uj list view oraz tablicê, potem refresh
-
+	exp_db_arr[edit_id].nazwa = exp_db.nazwa;
+	exp_db_arr[edit_id].cena = exp_db.cena;
+	exp_db_arr[edit_id].multi = exp_db.multi;
+	exp_db_arr[edit_id].ocena = exp_db.ocena;
+	exp_db_arr[edit_id].single = exp_db.single;
+	exp_db_arr[edit_id].www = exp_db.www;
 	Refresh_Dod();
+	edit_id = -1;
 }
 
 long SearchLastPos()
