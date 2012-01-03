@@ -69,6 +69,8 @@ INT_PTR CALLBACK		EditDodatki_WndProc(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		MAIN_WND_PROC(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		Dlg_ManageDB_WndProc(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		Dlg_Search_WndProc(HWND,UINT,WPARAM,LPARAM);
+INT_PTR CALLBACK		Dlg_NewDB_WndProc(HWND,UINT,WPARAM,LPARAM);
+
 
 void				New_rec(); // podstawowe funkvj zwi¹zane z rekordami
 void				Save_rec();
@@ -1825,16 +1827,23 @@ void CreateDBFN()
 {
 	FILE *fs_db;
 	TCHAR dir_buff[1000];
-	
+	_tgetdcwd(_getdrive(),dir_buff,sizeof(dir_buff));
+	_tcscat(dir_buff,'\\');
 	_tcscat(dir_buff,db_path);
 	if (_tchdir(dir_buff) == -1)
 	{
 		_tmkdir(dir_buff);
 	}
+
 	_tcscat(dir_buff,db_name);
 	if (_tchdir(dir_buff) == -1)
 	{
 		_tmkdir(dir_buff);
+	}
+	else
+	{
+		MessageBox(hWnd,L"Baza danych ju¿ jest w u¿yciu",L"MK Games Catalogue",MB_OK);
+		return;
 	}
 	LoadDBPATH();
 
@@ -1851,14 +1860,24 @@ void CreateDBFN()
 
 void LoadDBPATH()
 {
+	wchar_t buff[550];
+	wchar_t cur_dir[550];
+	_tgetdcwd(_getdrive(),cur_dir,sizeof(cur_dir));
+
+	_tcscpy(MAIN_FN_PATH,cur_dir);
+	_tcscat(MAIN_FN_PATH,'\\');
 	_tcscat(MAIN_FN_PATH,db_path);
 	_tcscat(MAIN_FN_PATH,db_name);
 	_tcscat(MAIN_FN_PATH,MAIN_FN);
 
+	_tcscpy(EXP_FN_PATH,cur_dir);
+	_tcscat(EXP_FN_PATH,'\\');
 	_tcscat(EXP_FN_PATH,db_path);
 	_tcscat(EXP_FN_PATH,db_name);
 	_tcscat(EXP_FN_PATH,EXP_FN);
 
+	_tcscpy(MODS_FN_PATH,cur_dir);
+	_tcscat(MODS_FN_PATH,'\\');
 	_tcscat(MODS_FN_PATH,db_path);
 	_tcscat(MODS_FN_PATH,db_name);
 	_tcscat(MODS_FN_PATH,MODS_FN);
@@ -1979,4 +1998,47 @@ int GetLastIDDod()
 	return ret_id;
 
 
+}
+
+INT_PTR CALLBACK Dlg_NewDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPARAM lParam)
+{
+	int wmId, wmEvent, i;
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		
+
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		wmId    = LOWORD(wParam);
+		wmEvent = HIWORD(wParam);
+		switch (wmEvent)
+		{
+		case 0:
+			switch (wmId)
+			{
+			case IDOK:
+				wchar_t *buff;
+				_tcscpy(buff,db_name);
+				_tcscpy(db_name,GetDlgItem(hWnd,UINT(IDC_EDIT_NAME));
+				_tcscat(db_name,'\\');
+				CreateDBFN();
+				_tcscpy(db_name,buff);
+				LoadDBPATH();
+				
+				break;
+			case IDCANCEL:
+				EndDialog(hWnd,LOWORD(wParam));
+				break;
+			default:
+				break;
+			}
+		default:
+			break;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }
