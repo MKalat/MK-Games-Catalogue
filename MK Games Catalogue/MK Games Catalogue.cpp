@@ -880,6 +880,8 @@ void UpdateRCTRLS()
 
 	// mod_db - TAB_MODS
 	Refresh_Mods();
+
+	//TODO : Napisaæ ³adowanie ok³adek
 	
 
 }
@@ -1927,8 +1929,7 @@ INT_PTR CALLBACK Dlg_ManageDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPA
 
 void ManDB_NewDB()
 {
-	//TODO:Napisaæ ManDB_NewDB();
-
+	DialogBox(hInst,MAKEINTRESOURCE(IDD_NEWDB),hWnd,Dlg_NewDB_WndProc);
 }
 
 void ManDB_SelDB()
@@ -2027,6 +2028,7 @@ INT_PTR CALLBACK Dlg_NewDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPARAM
 				CreateDBFN();
 				_tcscpy(db_name,buff);
 				LoadDBPATH();
+				EndDialog(hWnd,LOWORD(wParam));
 				
 				break;
 			case IDCANCEL:
