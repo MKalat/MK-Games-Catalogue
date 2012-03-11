@@ -112,8 +112,8 @@ void				CreateDBFN(); // tworzy nowa pust¹ bazê danych
 void				InitDBPpath(); // inicjuje œcie¿ke do bazy danych programu lokalna œciezk¹
 void				LoadDBPATH(); // ³aduje œcie¿kê do aktualnej bazy danych;
 void				ManDB_NewDB(); //dodaje now¹ baze danych
-void				ManDB_SelDB(); // ³aduje wybran¹ baze danych
-void				ManDB_DelDB(); // kasuje dana baze danych
+void				ManDB_SelDB(wchar_t* name); // ³aduje wybran¹ baze danych
+void				ManDB_DelDB(wchar_t* name); // kasuje dana baze danych
 void				Search_BTSZUKAJ();
 int					GetLastIDDod(); // zwraca najwy¿sze id rekordu EXP_DB w pliku EXP_FN
 
@@ -1317,7 +1317,7 @@ int GetLastIDMody()
 }
 void Prep_Edit_Mody()
 {
-	for int x = 0; x < mods_db_arr.size(); x++)
+	for (int x = 0; x < mods_db_arr.size(); x++)
 	{
 		if (SendMessage(GetDlgItem(TAB_MODY,10400),LVM_GETITEMSTATE,(WPARAM)x,(LPARAM)(UINT)LVIS_SELECTED) == LVIS_SELECTED)
 		{
@@ -1331,20 +1331,20 @@ void Prep_Edit_Mody()
 
 void Edit_Mody()
 {
-	mods_db_arr[edit_id].nazwa = mods_db.nazwa;
-	mods_db_arr[edit_id].ocena = mods_db.ocena;
-	mods_db_arr[edit_id].wersja_gry = mods_db.wersja_gry;
-	mods_db_arr[edit_id].wersja_moda = mods_db.wersja_moda;
-	mods_db_arr[edit_id].www = mods_db.www;
+	_tcscpy(mods_db_arr[edit_id].nazwa,mods_db.nazwa);
+	_tcscpy(mods_db_arr[edit_id].ocena,mods_db.ocena);
+	_tcscpy(mods_db_arr[edit_id].wersja_gry,mods_db.wersja_gry);
+	_tcscpy(mods_db_arr[edit_id].wersja_moda,mods_db.wersja_moda);
+	_tcscpy(mods_db_arr[edit_id].www,mods_db.www);
 	Refresh_Mods();
 	edit_id = -1;
 }
 
 void Prep_Edit_Dod()
 {
-	for int x = 0; x < exp_db_arr.size(); x++)
+	for (int x = 0; x < exp_db_arr.size(); x++)
 	{
-		if (SendMessage(GetDlgItem(TAB_EXP,10300),LVM_GETITEMSTATE,(WPARAM)x,(LPARAM)(UINT)LVIS_SELECTED) == LVIS_SELECTED)
+		if (SendMessage(GetDlgItem(TAB_DODATKI,10300),LVM_GETITEMSTATE,(WPARAM)x,(LPARAM)(UINT)LVIS_SELECTED) == LVIS_SELECTED)
 		{
 			edit_id = x;
 			return;
@@ -1384,12 +1384,12 @@ void Add_Mody()
 
 void Edit_Dod()
 {
-	exp_db_arr[edit_id].nazwa = exp_db.nazwa;
-	exp_db_arr[edit_id].cena = exp_db.cena;
-	exp_db_arr[edit_id].multi = exp_db.multi;
-	exp_db_arr[edit_id].ocena = exp_db.ocena;
-	exp_db_arr[edit_id].single = exp_db.single;
-	exp_db_arr[edit_id].www = exp_db.www;
+	_tcscpy(exp_db_arr[edit_id].nazwa,exp_db.nazwa);
+	_tcscpy(exp_db_arr[edit_id].cena,exp_db.cena);
+	_tcscpy(exp_db_arr[edit_id].multi,exp_db.multi);
+	_tcscpy(exp_db_arr[edit_id].ocena,exp_db.ocena);
+	_tcscpy(exp_db_arr[edit_id].single,exp_db.single);
+	_tcscpy(exp_db_arr[edit_id].www,exp_db.www);
 	Refresh_Dod();
 	edit_id = -1;
 }
@@ -1587,7 +1587,7 @@ void ClearCTRLS()
 	SetWindowText(GetDlgItem(TAB_KODY,10102),TEXT(""));
 
 	Refresh_Mods();
-	Refresh_Dod()
+	Refresh_Dod();
 
 
 
@@ -1830,7 +1830,7 @@ void CreateDBFN()
 	FILE *fs_db;
 	TCHAR dir_buff[1000];
 	_tgetdcwd(_getdrive(),dir_buff,sizeof(dir_buff));
-	_tcscat(dir_buff,'\\');
+	_tcscat(dir_buff,TEXT("\\"));
 	_tcscat(dir_buff,db_path);
 	if (_tchdir(dir_buff) == -1)
 	{
@@ -1844,7 +1844,7 @@ void CreateDBFN()
 	}
 	else
 	{
-		MessageBox(hWnd,L"Baza danych ju¿ jest w u¿yciu",L"MK Games Catalogue",MB_OK);
+		MessageBox(MAIN_hWnd,L"Baza danych ju¿ jest w u¿yciu",L"MK Games Catalogue",MB_OK);
 		return;
 	}
 	LoadDBPATH();
@@ -1867,19 +1867,19 @@ void LoadDBPATH()
 	_tgetdcwd(_getdrive(),cur_dir,sizeof(cur_dir));
 
 	_tcscpy(MAIN_FN_PATH,cur_dir);
-	_tcscat(MAIN_FN_PATH,'\\');
+	_tcscat(MAIN_FN_PATH,TEXT("\\"));
 	_tcscat(MAIN_FN_PATH,db_path);
 	_tcscat(MAIN_FN_PATH,db_name);
 	_tcscat(MAIN_FN_PATH,MAIN_FN);
 
 	_tcscpy(EXP_FN_PATH,cur_dir);
-	_tcscat(EXP_FN_PATH,'\\');
+	_tcscat(EXP_FN_PATH,TEXT("\\"));
 	_tcscat(EXP_FN_PATH,db_path);
 	_tcscat(EXP_FN_PATH,db_name);
 	_tcscat(EXP_FN_PATH,EXP_FN);
 
 	_tcscpy(MODS_FN_PATH,cur_dir);
-	_tcscat(MODS_FN_PATH,'\\');
+	_tcscat(MODS_FN_PATH,TEXT("\\"));
 	_tcscat(MODS_FN_PATH,db_path);
 	_tcscat(MODS_FN_PATH,db_name);
 	_tcscat(MODS_FN_PATH,MODS_FN);
@@ -1893,7 +1893,7 @@ INT_PTR CALLBACK Dlg_ManageDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPA
 	{
 	case WM_INITDIALOG:
 		//TODO:Napisaæ inicjalizacjê MANAGEDBS - wczytywanie nazw baz danych, wyœwietlanie tego
-
+		
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -1908,10 +1908,33 @@ INT_PTR CALLBACK Dlg_ManageDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPA
 				ManDB_NewDB();
 				break;
 			case IDC_BUTTON_SEL:
-				ManDB_SelDB();
+				int ret = 0;
+				wchar_t* str;
+				ret = SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETCURSEL,NULL,NULL);
+				if (ret != LB_ERR)
+				{
+					if (SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL) <> LB_ERR)
+					{
+						_tcscpy(str,SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL));
+						ManDB_SelDB(str);
+					}
+
+				}
+				
 				break;
 			case IDC_BUTTON_DEL:
-				ManDB_DelDB();
+				int ret = 0;
+				wchar_t* str;
+				ret = SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETCURSEL,NULL,NULL)
+				if (ret != LB_ERR)
+				{
+					if (SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL) <> LB_ERR)
+					{
+						_tcscpy(str,SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL));
+						ManDB_DelDB(str);
+					}
+				}
+				
 				break;
 			case IDC_BUTTON_EXIT:
 				EndDialog(hWnd,LOWORD(wParam));
@@ -1932,13 +1955,17 @@ void ManDB_NewDB()
 	DialogBox(hInst,MAKEINTRESOURCE(IDD_NEWDB),hWnd,Dlg_NewDB_WndProc);
 }
 
-void ManDB_SelDB()
+void ManDB_SelDB(wchar_t* name)
 {
-	//TODO:Napisaæ ManDB_SelDB()
+	_tcscpy(db_name,name);
+	_tcscat(db_name,"\\");
+	LoadDBPATH();
+	curPos = 0;
+	ReadRec(0);
 
 }
 
-void ManDB_DelDB()
+void ManDB_DelDB(wchar_t* name)
 {
 	//TODO: Napisaæ ManDB_DelDB()
 
