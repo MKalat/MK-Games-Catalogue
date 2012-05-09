@@ -212,7 +212,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            128,-1,14,14,20,20
     LTEXT           "MK Games Catalogue, Version 1.0",-1,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C)  Marcin Kalat 2011",-1,42,26,114,8
+    LTEXT           "Copyright (C)  Marcin Kalat 2011 - 2012",-1,42,26,144,8
     DEFPUSHBUTTON   "OK",1,168,153,50,14,WS_GROUP
     LTEXT           "Program do katalogowania gier komputerowych. Umozliwia zapisanie katalogowych informacji o danej grze, a takze kodów do danej gry. ",-1,42,41,165,78
 END
@@ -229,30 +229,6 @@ BEGIN
     LTEXT           "Pole",IDC_STATIC,7,33,14,8
     CONTROL         "",IDC_LIST_WYNIKI,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,70,230,218
     LTEXT           "Wyniki",IDC_STATIC,7,56,22,8
-END
-
-IDD_MANAGEDB DIALOGEX 0, 0, 261, 218
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "MK Games Catalogue - Zarz¹dzaj DB"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    LISTBOX         IDC_LIST_DBS,7,19,164,184,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Bazy danych :",IDC_STATIC,7,7,46,8
-    PUSHBUTTON      "Nowa",IDC_BUTTON_NEW,187,19,50,14
-    PUSHBUTTON      "Wybierz",IDC_BUTTON_SEL,187,38,50,14
-    PUSHBUTTON      "Usuñ",IDC_BUTTON_DEL,187,58,50,14
-    PUSHBUTTON      "Anuluj",IDC_BUTTON_EXIT,187,88,50,14
-END
-
-IDD_NEWDB DIALOGEX 0, 0, 196, 63
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "MK Games Catalogue - Dodaj DB"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,84,42,50,14
-    PUSHBUTTON      "Anuluj",IDCANCEL,139,42,50,14
-    LTEXT           "Nazwa",IDC_STATIC,7,18,22,8
-    EDITTEXT        IDC_EDIT_NAME,37,14,152,12,ES_AUTOHSCROLL
 END
 
 
@@ -336,25 +312,6 @@ BEGIN
         BOTTOMMARGIN, 288
         HORZGUIDE, 17
     END
-
-    IDD_MANAGEDB, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 254
-        VERTGUIDE, 187
-        VERTGUIDE, 237
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 211
-    END
-
-    IDD_NEWDB, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 189
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 56
-        HORZGUIDE, 26
-    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -425,7 +382,7 @@ IDI_ICON8               ICON                    "D:\\RYSUNKI\\MK_LOGO.ico"
 BEGIN
     POPUP "&Plik"
     BEGIN
-        MENUITEM "Zarz¹dzaj bazami danych",     ID_PLIK_ZARZ32782
+        MENUITEM "Otwórz baze danych",          ID_PLIK_ZARZ32782
         MENUITEM "Wyszukaj",                    ID_PLIK_WY
         MENUITEM SEPARATOR
         MENUITEM "&Nowy Rekord",                32771

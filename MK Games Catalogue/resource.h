@@ -40,8 +40,6 @@
 #define IDI_ICON6                       158
 #define IDI_ICON7                       159
 #define IDD_SZUKAJ                      160
-#define IDD_MANAGEDB                    161
-#define IDD_NEWDB                       162
 #define IDI_ICON8                       163
 #define IDC_STATIC_TITLE                1000
 #define IDC_STATIC_PUBLISHER            1001
@@ -61,9 +59,7 @@
 #define IDC_BUTTON_PREV                 1015
 #define IDC_BUTTON_NEXT                 1016
 #define IDC_BUTTON_LAST                 1017
-#define IDC_BUTTON_NEW                  1018
 #define IDC_BUTTON_SAVE                 1019
-#define IDC_BUTTON_DEL                  1020
 #define IDC_STATIC_REC                  1021
 #define IDC_EDIT_RECNO                  1022
 #define IDC_STATIC_RECOF                1023
@@ -91,10 +87,6 @@
 #define IDC_COMBO_SZPOLE                10801
 #define IDC_LIST_WYNIKI                 10802
 #define BUTTON_SZUKAJ                   10803
-#define IDC_LIST_DBS                    10804
-#define IDC_BUTTON_SEL                  10806
-#define IDC_BUTTON_EXIT                 10808
-#define IDC_EDIT_NAME                   10809
 #define ID_PLIK_NOWY                    32771
 #define ID_PLIK_ZAPISZ                  32772
 #define ID_PLIK_USU32773                32773

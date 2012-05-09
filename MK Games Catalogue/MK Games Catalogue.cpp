@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <direct.h>
+#include <errno.h>
+#include <shlobj.h>
 
 
 #define MAX_LOADSTRING 100
@@ -45,11 +47,12 @@ HWND TAB_DODATKI;
 bool new_mods_rec = false;
 bool new_exp_rec = false;
 bool new_main_rec = false;
-TCHAR db_name[50] = TEXT("default\\"); // nazwa bazy danych;
 TCHAR db_path[550] = TEXT("db\\");
+TCHAR db_covers[550] = TEXT("covers\\");
 TCHAR MAIN_FN_PATH[1000];
 TCHAR EXP_FN_PATH[1000];
 TCHAR MODS_FN_PATH[1000];
+TCHAR COVERS_DIR[1000];
 int edit_id = -1;
 
  
@@ -67,9 +70,7 @@ INT_PTR CALLBACK		Dlg_DodatkiWndProc(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		EditMody_WndProc(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		EditDodatki_WndProc(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		MAIN_WND_PROC(HWND,UINT,WPARAM,LPARAM);
-INT_PTR CALLBACK		Dlg_ManageDB_WndProc(HWND,UINT,WPARAM,LPARAM);
 INT_PTR CALLBACK		Dlg_Search_WndProc(HWND,UINT,WPARAM,LPARAM);
-INT_PTR CALLBACK		Dlg_NewDB_WndProc(HWND,UINT,WPARAM,LPARAM);
 
 
 void				New_rec(); // podstawowe funkvj zwi¹zane z rekordami
@@ -110,12 +111,12 @@ void				Start_AU();
 int					CheckDBExists(); // sprawdza czy istnieje baza danych
 void				CreateDBFN(); // tworzy nowa pust¹ bazê danych
 void				InitDBPpath(); // inicjuje œcie¿ke do bazy danych programu lokalna œciezk¹
-void				LoadDBPATH(); // ³aduje œcie¿kê do aktualnej bazy danych;
-void				ManDB_NewDB(); //dodaje now¹ baze danych
-void				ManDB_SelDB(wchar_t* name); // ³aduje wybran¹ baze danych
-void				ManDB_DelDB(wchar_t* name); // kasuje dana baze danych
+void				LoadDBPATH(bool cust, wchar_t *cust_path); // ³aduje œcie¿kê do aktualnej bazy danych;
+void				OpenDB();
 void				Search_BTSZUKAJ();
 int					GetLastIDDod(); // zwraca najwy¿sze id rekordu EXP_DB w pliku EXP_FN
+void				Del_rec_ModsDB(int item);
+void				Del_rec_ExpDB(int item);
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -304,7 +305,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				DestroyWindow(hWnd);
 				break;
 			case ID_PLIK_ZARZ32782:
-				DialogBox(hInst,MAKEINTRESOURCE(IDD_MANAGEDB),hWnd,Dlg_ManageDB_WndProc);
+				OpenDB();
 				break;
 			case ID_PLIK_WY:
 				DialogBox(hInst,MAKEINTRESOURCE(IDD_SZUKAJ),hWnd,Dlg_Search_WndProc);
@@ -881,7 +882,23 @@ void UpdateRCTRLS()
 	// mod_db - TAB_MODS
 	Refresh_Mods();
 
-	//TODO : Napisaæ ³adowanie ok³adek
+	//Napisaæ ³adowanie ok³adek
+	struct _stat status;
+	if (_tcscmp(main_db.pathtopic,_TEXT("")) != 0)
+	{
+		if (_stat(main_db.pathtopic,status) == 0)
+		{
+			HANDLE okladka;
+			okladka = LoadImage(NULL,main_db.pathtopic,IMAGE_BITMAP,119,139,LR_LOADFROMFILE);
+			SendMessage(GetDlgItem(MAIN_hWnd,1031),STM_SETIMAGE,(WPARAM)IMAGE_BITMAP,(LPARAM)okladka);
+			
+		}
+	}
+	else
+	{
+		//do nothing
+		
+	}
 	
 
 }
@@ -1056,7 +1073,7 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 				if (DialogBox(hInst, MAKEINTRESOURCE(134), hWnd, EditMody_WndProc) == 10505)
 				{
 					Add_Mody();
-
+					
 				}
 				break;
 			case 10402:
@@ -1069,7 +1086,14 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 				}
 				break;
 			case 10403:
-				//TODO: get selected item and delete it from array and list view control via getdispinfo
+				//get selected item and delete it from array and list view control via getdispinfo
+				int item;
+				item = ListView_GetNextItem(GetDlgItem(hWnd,MAKEINTRESOURCE(10400)),-1,LVIS_SELECTED);
+				if (item != -1)
+				{
+					Del_rec_ModsDB(item);
+					Refresh_Mods();
+				}
 				break;
 			default:
 				break;
@@ -1168,13 +1192,55 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 
 		return (INT_PTR)TRUE;
 
-	/*case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+	case WM_COMMAND:
+		wmId    = LOWORD(wParam);
+		wmEvent = HIWORD(wParam);
+		switch (wmEvent)
 		{
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
+		case 0:
+			switch (wmId)
+			{
+			case 10301:
+				// prepare struct for newly created list view item, id dlg_box it will be filled with data
+				// then in Add_Mody data will be added to array and to the control via getdispinfo
+				exp_db.IDMAIN = exp_db.ID;
+				exp_db.ID = GetLastIDDod() + 1;
+				new_exp_rec = true;
+				if (DialogBox(hInst, MAKEINTRESOURCE(135), hWnd, EditMody_WndProc) == 10607)
+				{
+					Add_Dod();
+					
+				}
+				break;
+			case 10302:
+				// get selected item on list view control, get its data and copy to tmp struct, thaen operate
+				// on this struct in dlg_box and then copy back its contents to array and to control via getdispinfo
+				Prep_Edit_Dod();
+				if (DialogBox(hInst,MAKEINTRESOURCE(135),hWnd,EditMody_WndProc) == 10607)
+				{
+					Edit_Dod();
+				}
+				break;
+			case 10303:
+				//get selected item and delete it from array and list view control via getdispinfo
+				int item;
+				item = ListView_GetNextItem(GetDlgItem(hWnd,MAKEINTRESOURCE(10300)),-1,LVIS_SELECTED);
+				if (item != -1)
+				{
+					Del_rec_ExpDB(item);
+					Refresh_Dod();
+				}
+				break;
+			default:
+				break;
+
+			}
+			default:
+			break;
 		}
-		break;*/
+		return (INT_PTR)TRUE;
+		
+		break;
 	case WM_NOTIFY:
 		switch (((LPNMHDR) lParam)->code)
         {
@@ -1678,8 +1744,8 @@ INT_PTR CALLBACK MAIN_WND_PROC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 			
 			SendMessage(Tab_hwnd,TCM_SETCURSEL,0,NULL);
 		}
+		
 
-		InitializeCOMBOS();
 		bt_new = LoadImage(hInst,MAKEINTRESOURCE(IDI_ICON1),IMAGE_ICON,NULL,NULL,NULL);
 		bt_del = LoadImage(hInst,MAKEINTRESOURCE(IDI_ICON2),IMAGE_ICON,NULL,NULL,NULL);
 		bt_save = LoadImage(hInst,MAKEINTRESOURCE(IDI_ICON7),IMAGE_ICON,NULL,NULL,NULL);
@@ -1696,6 +1762,18 @@ INT_PTR CALLBACK MAIN_WND_PROC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		SendMessage(GetDlgItem(hWnd,1015),BM_SETIMAGE,(WPARAM)IMAGE_ICON,(LPARAM)bt_prev);
 		SendMessage(GetDlgItem(hWnd,1016),BM_SETIMAGE,(WPARAM)IMAGE_ICON,(LPARAM)bt_next);
 		SendMessage(GetDlgItem(hWnd,1017),BM_SETIMAGE,(WPARAM)IMAGE_ICON,(LPARAM)bt_last);
+
+
+		// po zainicjalizowaniu ikonek, t³umaczenia, ustaiweñ, odpal pierwszy rekord w istniej¹cej bazie danych
+		ReadSettings();
+		InitializeCOMBOS();
+		LoadDBPATH(false,NULL);
+		if (CheckDBExists() == -1)
+		{
+			CreateDBFN();
+		}
+		First_Rec();
+
 
 		return (INT_PTR)TRUE;
 	case WM_COMMAND:
@@ -1814,7 +1892,6 @@ void Start_AU()
 int CheckDBExists()
 {
 	struct _stat buff;
-	LoadDBPATH();
 	if ((_tstat(MAIN_FN_PATH,&buff) == 0) && (_tstat(EXP_FN_PATH,&buff) == 0) && (_tstat(MODS_FN_PATH,&buff) == 0))
 	{
 		return 0;
@@ -1827,28 +1904,8 @@ int CheckDBExists()
 
 void CreateDBFN()
 {
-	FILE *fs_db;
-	TCHAR dir_buff[1000];
-	_tgetdcwd(_getdrive(),dir_buff,sizeof(dir_buff));
-	_tcscat(dir_buff,TEXT("\\"));
-	_tcscat(dir_buff,db_path);
-	if (_tchdir(dir_buff) == -1)
-	{
-		_tmkdir(dir_buff);
-	}
-
-	_tcscat(dir_buff,db_name);
-	if (_tchdir(dir_buff) == -1)
-	{
-		_tmkdir(dir_buff);
-	}
-	else
-	{
-		MessageBox(MAIN_hWnd,L"Baza danych ju¿ jest w u¿yciu",L"MK Games Catalogue",MB_OK);
-		return;
-	}
-	LoadDBPATH();
-
+	_tmkdir(COVERS_DIR);
+	
 	fs_db = _tfopen(MAIN_FN_PATH,TEXT("wb"));
 	fclose(fs_db);
 	FILE *fs_db2;
@@ -1860,114 +1917,49 @@ void CreateDBFN()
 
 }
 
-void LoadDBPATH()
+void LoadDBPATH(bool cust, wchar_t* cust_path)
 {
-	wchar_t buff[550];
-	wchar_t cur_dir[550];
-	_tgetdcwd(_getdrive(),cur_dir,sizeof(cur_dir));
-
-	_tcscpy(MAIN_FN_PATH,cur_dir);
-	_tcscat(MAIN_FN_PATH,TEXT("\\"));
-	_tcscat(MAIN_FN_PATH,db_path);
-	_tcscat(MAIN_FN_PATH,db_name);
-	_tcscat(MAIN_FN_PATH,MAIN_FN);
-
-	_tcscpy(EXP_FN_PATH,cur_dir);
-	_tcscat(EXP_FN_PATH,TEXT("\\"));
-	_tcscat(EXP_FN_PATH,db_path);
-	_tcscat(EXP_FN_PATH,db_name);
-	_tcscat(EXP_FN_PATH,EXP_FN);
-
-	_tcscpy(MODS_FN_PATH,cur_dir);
-	_tcscat(MODS_FN_PATH,TEXT("\\"));
-	_tcscat(MODS_FN_PATH,db_path);
-	_tcscat(MODS_FN_PATH,db_name);
-	_tcscat(MODS_FN_PATH,MODS_FN);
-}
-
-INT_PTR CALLBACK Dlg_ManageDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPARAM lParam)
-{
-	int wmId, wmEvent, i;
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
+	if (cust)
 	{
-	case WM_INITDIALOG:
-		//TODO:Napisaæ inicjalizacjê MANAGEDBS - wczytywanie nazw baz danych, wyœwietlanie tego
-		
-		return (INT_PTR)TRUE;
+		_tcscpy(MAIN_FN_PATH, cust_path);
+		_tcscat(MAIN_FN_PATH, MAIN_FN);
 
-	case WM_COMMAND:
-		wmId    = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
-		switch (wmEvent)
-		{
-		case 0:
-			switch (wmId)
-			{
-			case IDC_BUTTON_NEW:
-				ManDB_NewDB();
-				break;
-			case IDC_BUTTON_SEL:
-				int ret = 0;
-				wchar_t* str;
-				ret = SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETCURSEL,NULL,NULL);
-				if (ret != LB_ERR)
-				{
-					if (SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL) <> LB_ERR)
-					{
-						_tcscpy(str,SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL));
-						ManDB_SelDB(str);
-					}
+		_tcscpy(EXP_FN_PATH, cust_path);
+		_tcscat(EXP_FN_PATH, EXP_FN);
 
-				}
-				
-				break;
-			case IDC_BUTTON_DEL:
-				int ret = 0;
-				wchar_t* str;
-				ret = SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETCURSEL,NULL,NULL)
-				if (ret != LB_ERR)
-				{
-					if (SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL) <> LB_ERR)
-					{
-						_tcscpy(str,SendMessage(GetDlgItem(hWnd,MAKEINTRESOURCE(IDC_LIST_DBS)),(UINT)LB_GETITEMDATA,(WPARAM)ret,NULL));
-						ManDB_DelDB(str);
-					}
-				}
-				
-				break;
-			case IDC_BUTTON_EXIT:
-				EndDialog(hWnd,LOWORD(wParam));
-				break;
-			default:
-				break;
-			}
-		default:
-			break;
-		}
-		break;
+		_tcscpy(MODS_FN_PATH, cust_path);
+		_tcscat(MODS_FN_PATH, MODS_FN);
+
+		_tcscpy(COVERS_DIR,cust_path);
+		_tcscat(COVERS_DIR, db_covers);
+
 	}
-	return (INT_PTR)FALSE;
-}
+	else
+	{
+		wchar_t buff[550];
+		wchar_t cur_dir[550];
+		_tgetdcwd(_getdrive(),cur_dir,sizeof(cur_dir));
 
-void ManDB_NewDB()
-{
-	DialogBox(hInst,MAKEINTRESOURCE(IDD_NEWDB),hWnd,Dlg_NewDB_WndProc);
-}
+		_tcscpy(MAIN_FN_PATH,cur_dir);
+		_tcscat(MAIN_FN_PATH,TEXT("\\"));
+		_tcscat(MAIN_FN_PATH,db_path);
+		_tcscat(MAIN_FN_PATH,MAIN_FN);
 
-void ManDB_SelDB(wchar_t* name)
-{
-	_tcscpy(db_name,name);
-	_tcscat(db_name,"\\");
-	LoadDBPATH();
-	curPos = 0;
-	ReadRec(0);
+		_tcscpy(EXP_FN_PATH,cur_dir);
+		_tcscat(EXP_FN_PATH,TEXT("\\"));
+		_tcscat(EXP_FN_PATH,db_path);
+		_tcscat(EXP_FN_PATH,EXP_FN);
 
-}
+		_tcscpy(MODS_FN_PATH,cur_dir);
+		_tcscat(MODS_FN_PATH,TEXT("\\"));
+		_tcscat(MODS_FN_PATH,db_path);
+		_tcscat(MODS_FN_PATH,MODS_FN);
 
-void ManDB_DelDB(wchar_t* name)
-{
-	//TODO: Napisaæ ManDB_DelDB()
+		_tcscpy(COVERS_DIR,cur_dir);
+		_tcscat(COVERS_DIR,TEXT("\\"));
+		_tcscat(COVERS_DIR,db_path);
+		_tcscat(COVERS_DIR,db_covers);
+	}
 
 }
 
@@ -2028,46 +2020,73 @@ int GetLastIDDod()
 
 }
 
-INT_PTR CALLBACK Dlg_NewDB_WndProc(HWND hWnd,UINT message, WPARAM wParam, LPARAM lParam)
+
+void Del_rec_ModsDB(int item)
 {
-	int wmId, wmEvent, i;
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
+	mods_db_arr[item].ID = -1;
+	std::vector <MODS_REC> mods_buff;
+	for (int i = 0; i < mods_db_arr.size(); i++)
 	{
-	case WM_INITDIALOG:
-		
-
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		wmId    = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
-		switch (wmEvent)
+		if (mods_db_arr[i].ID != -1)
 		{
-		case 0:
-			switch (wmId)
-			{
-			case IDOK:
-				wchar_t *buff;
-				_tcscpy(buff,db_name);
-				_tcscpy(db_name,GetDlgItem(hWnd,UINT(IDC_EDIT_NAME));
-				_tcscat(db_name,'\\');
-				CreateDBFN();
-				_tcscpy(db_name,buff);
-				LoadDBPATH();
-				EndDialog(hWnd,LOWORD(wParam));
-				
-				break;
-			case IDCANCEL:
-				EndDialog(hWnd,LOWORD(wParam));
-				break;
-			default:
-				break;
-			}
-		default:
-			break;
+			mods_buff.push_back(mods_db_arr[i]);
 		}
-		break;
 	}
-	return (INT_PTR)FALSE;
+	mods_db_arr.clear();
+
+	for (int i = 0; i < mods_buff.size(); i++)
+	{
+		mods_db_arr.push_back(mods_buff[i]);
+	}
+
+}
+
+void Del_rec_ExpDB(int item)
+{
+	exp_db_arr[item].ID = -1;
+	std::vector <EXPANSIONS_REC> exp_buff;
+	for (int i = 0; i < exp_db_arr.size(); i++)
+	{
+		if (exp_db_arr[i].ID != -1)
+		{
+			exp_buff.push_back(exp_db_arr[i]);
+		}
+	}
+	exp_db_arr.clear();
+
+	for (int i = 0; i < exp_buff.size(); i++)
+	{
+		exp_db_arr.push_back(exp_buff[i]);
+	}
+
+
+
+}
+void OpenDB()
+{
+	//TODO: Napisac otwieranie / jesli istanieje/ lu tworzenioe nowej bazy danych za pomoca okna otwieranie nowego katalogu
+	BROWSEINFO dir_info;
+	dir_info.hwndOwner = MAIN_hWnd;
+	dir_info.pidlRoot = NULL;
+	dir_info.lpszTitle = TEXT("Podaj katalog z baz¹ danych w formacie MKGC");
+	dir_info.ulFlags = BIF_USENEWUI;
+	if (CoInitializeEx(NULL, COINIT_APARTMENTTHREADED) == S_OK)
+	{
+		if (SHBrowseForFolder(dir_info) != NULL)
+		{
+			struct _stat status;
+			if (_stat(dir_info.pszDisplayName,status) == 0)
+			{
+				LoadDBPATH(true,&dir_info.pszDisplayName);
+				if (CheckDBExist)
+				{
+					
+
+				}
+			}
+		}
+
+	}
+
+
 }
