@@ -41,6 +41,7 @@
 #define IDI_ICON7                       159
 #define IDD_SZUKAJ                      160
 #define IDI_ICON8                       163
+#define IDR_VERSION2                    164
 #define IDC_STATIC_TITLE                1000
 #define IDC_STATIC_PUBLISHER            1001
 #define IDC_STATIC_DISTR                1002
@@ -108,7 +109,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        164
+#define _APS_NEXT_RESOURCE_VALUE        165
 #define _APS_NEXT_COMMAND_VALUE         32785
 #define _APS_NEXT_CONTROL_VALUE         10810
 #define _APS_NEXT_SYMED_VALUE           110

@@ -47,12 +47,13 @@ HWND TAB_DODATKI;
 bool new_mods_rec = false;
 bool new_exp_rec = false;
 bool new_main_rec = false;
-TCHAR db_path[550] = TEXT("db\\");
-TCHAR db_covers[550] = TEXT("covers\\");
-TCHAR MAIN_FN_PATH[1000];
-TCHAR EXP_FN_PATH[1000];
-TCHAR MODS_FN_PATH[1000];
-TCHAR COVERS_DIR[1000];
+wchar_t cur_db_path[1024];
+wchar_t db_path[550] = TEXT("\\db\\");
+wchar_t db_covers[550] = TEXT("covers\\");
+wchar_t MAIN_FN_PATH[1000];
+wchar_t EXP_FN_PATH[1000];
+wchar_t MODS_FN_PATH[1000];
+wchar_t COVERS_DIR[1000];
 int edit_id = -1;
 
  
@@ -117,6 +118,7 @@ void				Search_BTSZUKAJ();
 int					GetLastIDDod(); // zwraca najwy¿sze id rekordu EXP_DB w pliku EXP_FN
 void				Del_rec_ModsDB(int item);
 void				Del_rec_ExpDB(int item);
+void				ClearListCTRLS();
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -251,7 +253,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	//MAIN_hWnd = hWnd;
 	
 	RECT rcTab;
-
+	
 	switch (message)
 	{
 	case WM_CREATE:
@@ -259,7 +261,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//Tab_hwnd = CreateWindow(WC_TABCONTROL,TEXT(""),WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS,420,240,317,407,hWnd,NULL,hInst,NULL);
 		MAIN_hWnd = CreateDialog(hInst,MAKEINTRESOURCE(100),hWnd,MAIN_WND_PROC);
 		SetWindowPos(MAIN_hWnd,NULL,0,0,1000,900,SWP_SHOWWINDOW);
-		
+		CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
 				
        /* bt_brush = CreateSolidBrush(RGB(251,255,30));
@@ -548,8 +550,8 @@ void New_rec()
 	ClearARRS();
 	ClearCTRLS();
 	main_db.ID = Find_Last_id() + 1;
-	Save_rec();
-	new_main_rec = false;
+	//Save_rec();
+	
 
 
 }
@@ -557,10 +559,12 @@ void Save_rec()
 {
 	if (CheckDBExists() == 0)
 	{
+		
 		UpdateWCTRLS();
+		
 		if (SaveToFile(curPos) == 0)
 		{
-			//do nothing
+			ReadRec(curPos);
 		}
 		else
 		{
@@ -633,13 +637,38 @@ void LastRec()
 
 void Load_pic()
 {
-//TODO: Npsaæ ³adowanie zdjêcia ok³adki do bazy danych i na main form
+	//Npsaæ ³adowanie zdjêcia ok³adki do bazy danych i na main form
+	wchar_t *buff;
+	OPENFILENAME ofn;
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = MAIN_hWnd;
+	ofn.lpstrFilter = _TEXT("Bitmapy \0 *.bmp\0\0");
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFile = buff;
+	ofn.nMaxFile = 1024;
+	ofn.lpstrTitle = _TEXT("Podaj plik bitamy do wczytania do programu MK Games Catalogue");
+	ofn.Flags = OFN_FILEMUSTEXIST;
 
+	if (GetOpenFileName(&ofn) != 0)
+	{
+		wchar_t *dest = new wchar_t;
+		_tcscpy(dest,COVERS_DIR);
+		_tcscat(dest, buff);
+		CopyFile(buff,dest,FALSE);
+		_tcscpy(main_db.pathtopic,dest);
+		Save_rec();
+	}
+	
+	
 }
 
 void Del_pic()
 {
-//TODO: Napisaæ usuwanie zdjêcia ok³adki z bazy danych i main form
+// Napisaæ usuwanie zdjêcia ok³adki z bazy danych i main form
+	DeleteFile(main_db.pathtopic);
+	_tcscpy(main_db.pathtopic,_TEXT(""));
+	Save_rec();
+	
 
 }
 
@@ -647,6 +676,7 @@ void ReadRec(long pos)
 {
 	if (CheckDBExists() == 0)
 	{
+		ClearListCTRLS();
 		ClearARRS();
 		if (ReadFromFile(pos) == 0)
 		{
@@ -654,7 +684,7 @@ void ReadRec(long pos)
 		}
 		else
 		{
-			MessageBox(MAIN_hWnd,TEXT("Wystapi³ b³¹d podczas odczytu bazy danych !. Ecounetred error during DB read operation !."),TEXT("MK Games Catalogue"),MB_OK);
+			MessageBox(MAIN_hWnd,TEXT("Wystapi³ b³¹d podczas odczytu bazy danych !. Ecountered error during DB read operation !."),TEXT("MK Games Catalogue"),MB_OK);
 		}
 	}
 
@@ -663,68 +693,77 @@ void ReadRec(long pos)
 
 int	ReadFromFile(long pos)
 {
-	FILE *fs_db;
-	fs_db = _tfopen(MAIN_FN_PATH,TEXT("rb"));
-	if (fs_db != NULL)
+	struct _stat status;
+	if (_wstat(MAIN_FN_PATH,&status) == 0)
 	{
-		fseek(fs_db,pos,SEEK_SET);
-		fread(&main_db,sizeof(main_db),1,fs_db);
-		fclose(fs_db);
-		
-		long offset = 0;
-		FILE *exp_fs;
-		exp_fs = _tfopen(EXP_FN_PATH,TEXT("rb"));
-		if (exp_fs != NULL)
+		if (status.st_size > 0)
 		{
-			while (!(feof(exp_fs)))
+			FILE *fs_db;
+			fs_db = _tfopen(MAIN_FN_PATH,TEXT("rb"));
+			if (fs_db != NULL)
 			{
-				fseek(exp_fs,offset,SEEK_SET);
-				fread(&exp_db,sizeof(exp_db),1,exp_fs);
-				if (exp_db.IDMAIN == main_db.ID)
+				fseek(fs_db,pos,SEEK_SET);
+				fread(&main_db,sizeof(main_db),1,fs_db);
+				fclose(fs_db);
+				
+				FILE *exp_fs;
+				struct _stat stop1;
+				_wstat(EXP_FN_PATH,&stop1);
+				exp_fs = _tfopen(EXP_FN_PATH,TEXT("rb"));
+				if (exp_fs != NULL)
 				{
-					exp_db_arr.push_back(exp_db);
-					
-
+					for (unsigned long offset = 0; offset < stop1.st_size ; )
+					{
+						fseek(exp_fs,offset,SEEK_SET);
+						fread(&exp_db,sizeof(exp_db),1,exp_fs);
+						if (exp_db.IDMAIN == main_db.ID)
+						{
+							exp_db_arr.push_back(exp_db);
+						}
+						offset = offset + sizeof(exp_db);
+					}
+					fclose(exp_fs);
 				}
-				offset = offset + sizeof(exp_db);
+							
+				FILE *mod_fs;
+				struct _stat stop2;
+				_wstat(MODS_FN_PATH,&stop2);
+				mod_fs = _tfopen(MODS_FN_PATH,TEXT("rb"));
+				if (mod_fs != NULL)
+				{
+					for (unsigned long offset = 0; offset < stop2.st_size; )
+					{
+						fseek(mod_fs,offset,SEEK_SET);
+						fread(&mods_db,sizeof(mods_db),1,mod_fs);
+						if (mods_db.IDMAIN == main_db.ID)
+						{
+							mods_db_arr.push_back(mods_db);					
+						}
+
+						offset = offset + sizeof(mods_db);
+					}
+					fclose(mod_fs);
+				}
+
+				return 0;
 			}
-			fclose(exp_fs);
-		}
-		offset = 0;
-		
-		FILE *mod_fs;
-		mod_fs = _tfopen(MODS_FN_PATH,TEXT("rb"));
-		if (mod_fs != NULL)
-		{
-			while (!(feof(mod_fs)))
+			else
 			{
-				fseek(mod_fs,offset,SEEK_SET);
-				fread(&mods_db,sizeof(mods_db),1,mod_fs);
-				if (mods_db.IDMAIN == main_db.ID)
-				{
-					mods_db_arr.push_back(mods_db);
-
-					
-				}
-
-				offset = offset + sizeof(mods_db);
+				return -1;
 			}
-			fclose(mod_fs);
 		}
-
-		return 0;
 	}
 	else
 	{
-		return -1;
+		return 0;
 	}
 	
 }
 
 int	SaveToFile(long pos)
 {
-	long offset = 0;
 	FILE *fs_db;
+	LONGLONG stop = 0;
 	if (new_main_rec == false)
 	{
 		fs_db = _tfopen(MAIN_FN_PATH,TEXT("r+b"));
@@ -737,48 +776,67 @@ int	SaveToFile(long pos)
 			fs_mod = _tfopen(MODS_FN_PATH,TEXT("r+b"));
 			if (fs_mod != NULL)
 			{
-				while (!(feof(fs_mod)))
+				
+				struct _stat status;
+				if (_wstat(MODS_FN_PATH,&status))
 				{
-					fseek(fs_mod,offset,SEEK_SET);
-					fread(&mods_db,sizeof(mods_db),1,fs_mod);
-					if (main_db.ID == mods_db.IDMAIN)
+					stop = status.st_size;
+				}
+
+				MODS_REC mods_buff;
+				for (int x = 0; x < mods_db_arr.size() ; x++)
+				{
+					if (main_db.ID == mods_db_arr[x].IDMAIN)
 					{
-						for (int x = 0; x < mods_db_arr.size() ; x++)
+						for (long offset = 0; offset < stop ; )		
 						{
-							if (mods_db.ID == mods_db_arr[x].ID)
+							fseek(fs_mod,offset,SEEK_SET);
+							fread(&mods_buff,sizeof(mods_db),1,fs_mod);
+							if (mods_db_arr[x].ID == mods_buff.ID)
 							{
+								fseek(fs_mod,offset,SEEK_SET);
 								fwrite(&mods_db_arr[x],sizeof(mods_db),1,fs_mod);
 							}
+							offset = offset + sizeof(mods_db);
 
 						}
 
 					}
-					offset = offset + sizeof(mods_db);
+					
 				}
 				fclose(fs_mod);
 			}
 			
 			FILE *fs_exp;
-			offset = 0;
 			fs_exp = _tfopen(EXP_FN_PATH,TEXT("r+b"));
 			if (fs_exp != NULL)
 			{
-				while (!(feof(fs_exp)))
+				stop = 0;
+				struct _stat status;
+				if (_wstat(MODS_FN_PATH,&status))
 				{
-					fseek(fs_exp,offset,SEEK_SET);
-					fread(&exp_db,sizeof(exp_db),1,fs_exp);
-					if (main_db.ID == exp_db.IDMAIN)
+					stop = status.st_size;
+				}
+				EXPANSIONS_REC exp_buff;
+				for (int x = 0; x < exp_db_arr.size() ; x++)
+				{
+					if (main_db.ID == exp_db_arr[x].IDMAIN)
 					{
-						for (int y = 0; y < exp_db_arr.size(); y++)
+						for (long offset = 0; offset < stop ; )
 						{
-							if (exp_db.ID == exp_db_arr[y].ID)
+							fseek(fs_exp,offset,SEEK_SET);
+							fread(&exp_buff,sizeof(exp_db),1,fs_exp);
+							if (exp_db_arr[x].ID == exp_buff.ID)
 							{
-								fwrite(&exp_db_arr[y],sizeof(exp_db),1,fs_exp);
+								fseek(fs_exp,offset,SEEK_SET);
+								fwrite(&exp_db_arr[x],sizeof(exp_db),1,fs_exp);
 							}
+							offset = offset + sizeof(exp_db);
 
 						}
+
 					}
-					offset = offset + sizeof(exp_db);
+					
 				}
 				fclose(fs_exp);
 			}
@@ -793,18 +851,19 @@ int	SaveToFile(long pos)
 	}
 	else
 	{
-		fs_db = _tfopen(MAIN_FN_PATH,TEXT("ab"));
+		fs_db = _tfopen(MAIN_FN_PATH,TEXT("a+b"));
 		if (fs_db != NULL)
 		{
 			fseek(fs_db,(SearchLastPos() + sizeof(main_db)),SEEK_SET);
 			fwrite(&main_db,sizeof(main_db),1,fs_db);
 			
 			fclose(fs_db);
+			new_main_rec = false;
 			return 0;
 		}
 		else
 		{
-
+			new_main_rec = false;
 			return -1;
 		}
 	}
@@ -886,7 +945,7 @@ void UpdateRCTRLS()
 	struct _stat status;
 	if (_tcscmp(main_db.pathtopic,_TEXT("")) != 0)
 	{
-		if (_stat(main_db.pathtopic,status) == 0)
+		if (_wstat(main_db.pathtopic,&status) == 0)
 		{
 			HANDLE okladka;
 			okladka = LoadImage(NULL,main_db.pathtopic,IMAGE_BITMAP,119,139,LR_LOADFROMFILE);
@@ -1088,7 +1147,7 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 			case 10403:
 				//get selected item and delete it from array and list view control via getdispinfo
 				int item;
-				item = ListView_GetNextItem(GetDlgItem(hWnd,MAKEINTRESOURCE(10400)),-1,LVIS_SELECTED);
+				item = ListView_GetNextItem(GetDlgItem(hWnd,10400),-1,LVIS_SELECTED);
 				if (item != -1)
 				{
 					Del_rec_ModsDB(item);
@@ -1151,6 +1210,7 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
 	TAB_DODATKI = hWnd;
+	int wmId, wmEvent;
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
@@ -1203,10 +1263,10 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 			case 10301:
 				// prepare struct for newly created list view item, id dlg_box it will be filled with data
 				// then in Add_Mody data will be added to array and to the control via getdispinfo
-				exp_db.IDMAIN = exp_db.ID;
+				exp_db.IDMAIN = main_db.ID;
 				exp_db.ID = GetLastIDDod() + 1;
 				new_exp_rec = true;
-				if (DialogBox(hInst, MAKEINTRESOURCE(135), hWnd, EditMody_WndProc) == 10607)
+				if (DialogBox(hInst, MAKEINTRESOURCE(135), hWnd, EditDodatki_WndProc) == 10607)
 				{
 					Add_Dod();
 					
@@ -1216,7 +1276,7 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 				// get selected item on list view control, get its data and copy to tmp struct, thaen operate
 				// on this struct in dlg_box and then copy back its contents to array and to control via getdispinfo
 				Prep_Edit_Dod();
-				if (DialogBox(hInst,MAKEINTRESOURCE(135),hWnd,EditMody_WndProc) == 10607)
+				if (DialogBox(hInst,MAKEINTRESOURCE(135),hWnd,EditDodatki_WndProc) == 10607)
 				{
 					Edit_Dod();
 				}
@@ -1224,7 +1284,7 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 			case 10303:
 				//get selected item and delete it from array and list view control via getdispinfo
 				int item;
-				item = ListView_GetNextItem(GetDlgItem(hWnd,MAKEINTRESOURCE(10300)),-1,LVIS_SELECTED);
+				item = ListView_GetNextItem(GetDlgItem(hWnd,10300),-1,LVIS_SELECTED);
 				if (item != -1)
 				{
 					Del_rec_ExpDB(item);
@@ -1368,18 +1428,37 @@ INT_PTR CALLBACK EditDodatki_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 }
 int GetLastIDMody()
 {
-	int ret_id = 0;
-	FILE *fs_mods;
-	fs_mods = _tfopen(MODS_FN_PATH,TEXT("rb"));
-	while (!(feof(fs_mods)))
+	struct _stat status;
+	if (_wstat(MODS_FN_PATH,&status))
 	{
-		fread(&mods_db,sizeof(mods_db),1,fs_mods);
-		if (ret_id < mods_db.ID)
+		if (status.st_size > 0)
 		{
-			ret_id = mods_db.ID;
+			int ret_id = 0;
+			LONGLONG offset = 0;
+			FILE *fs_mods;
+			fs_mods = _tfopen(MODS_FN_PATH,TEXT("rb"));
+			while (!(feof(fs_mods)))
+			{
+				fseek(fs_mods,offset,SEEK_SET);
+				fread(&mods_db,sizeof(mods_db),1,fs_mods);
+				if (ret_id < mods_db.ID)
+				{
+					ret_id = mods_db.ID;
+				}
+				offset = offset + sizeof(mods_db);
+			}
+			return ret_id;
 		}
+		else
+		{
+			return 0;
+		}
+
 	}
-	return ret_id;
+	else 
+	{
+		return 0;
+	}
 }
 void Prep_Edit_Mody()
 {
@@ -1426,7 +1505,7 @@ void Add_Dod()
 		exp_db_arr.push_back(exp_db);
 		Refresh_Dod();
 		FILE *fs_exp;
-		fs_exp = _tfopen(EXP_FN_PATH,TEXT("ab"));
+		fs_exp = _tfopen(EXP_FN_PATH,TEXT("a+b"));
 		fwrite(&exp_db,sizeof(exp_db),1,fs_exp);
 		fclose(fs_exp);
 	}
@@ -1441,7 +1520,7 @@ void Add_Mody()
 		mods_db_arr.push_back(mods_db);
 		Refresh_Mods();
 		FILE *fs_mods;
-		fs_mods = _tfopen(MODS_FN_PATH,TEXT("ab"));
+		fs_mods = _tfopen(MODS_FN_PATH,TEXT("a+b"));
 		fwrite(&mods_db,sizeof(mods_db),1,fs_mods);
 		fclose(fs_mods);
 	}
@@ -1542,30 +1621,45 @@ void InitializeCOMBOS()
 
 int Find_Last_id()
 {
-	int L_ID = 0;
-	long offset = 0;
-	MAIN_REC main_buff;
-	FILE *fs_db;
-	fs_db = _tfopen(MAIN_FN_PATH,TEXT("rb"));
-	if (fs_db != NULL)
+	struct _stat status;
+	if (_wstat(MAIN_FN_PATH,&status) == 0)
 	{
-		while (!(feof(fs_db)))
+		if (status.st_size > 0)
 		{
-			fseek(fs_db,offset,SEEK_SET);
-			fread(&main_buff,sizeof(main_buff),1,fs_db);
-			if (main_db.ID > L_ID)
+			int L_ID = 0;
+			long offset = 0;
+			MAIN_REC main_buff;
+			FILE *fs_db;
+			fs_db = _tfopen(MAIN_FN_PATH,TEXT("rb"));
+			if (fs_db != NULL)
 			{
-				L_ID = main_db.ID;
+				while (!(feof(fs_db)))
+				{
+					fseek(fs_db,offset,SEEK_SET);
+					fread(&main_buff,sizeof(main_buff),1,fs_db);
+					if (main_buff.ID > L_ID)
+					{
+						L_ID = main_buff.ID;
 
+					}
+					offset = offset + sizeof(main_buff);
+				}
+				fclose(fs_db);
+				return L_ID;
 			}
-			offset = offset + sizeof(main_buff);
+			else
+			{
+
+				return -1;
+			}
 		}
-		fclose(fs_db);
-		return L_ID;
+		else
+		{
+			return 0;
+		}
 	}
 	else
 	{
-
 		return -1;
 	}
 
@@ -1772,7 +1866,7 @@ INT_PTR CALLBACK MAIN_WND_PROC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		{
 			CreateDBFN();
 		}
-		First_Rec();
+		FirstRec();
 
 
 		return (INT_PTR)TRUE;
@@ -1904,16 +1998,16 @@ int CheckDBExists()
 
 void CreateDBFN()
 {
+	_tmkdir(cur_db_path);
 	_tmkdir(COVERS_DIR);
-	
+	FILE* fs_db;
 	fs_db = _tfopen(MAIN_FN_PATH,TEXT("wb"));
 	fclose(fs_db);
-	FILE *fs_db2;
-	fs_db2 = _tfopen(EXP_FN_PATH,TEXT("wb"));
-	fclose(fs_db2);
-	FILE *fs_db3;
-	fs_db3 = _tfopen(MODS_FN_PATH,TEXT("wb"));
-	fclose(fs_db3);
+	fs_db = _tfopen(MODS_FN_PATH,TEXT("wb"));
+	fclose(fs_db);
+	fs_db = _tfopen(EXP_FN_PATH, TEXT("wb"));
+	fclose(fs_db);
+	
 
 }
 
@@ -1921,6 +2015,7 @@ void LoadDBPATH(bool cust, wchar_t* cust_path)
 {
 	if (cust)
 	{
+		_tcscpy(cur_db_path,cust_path);
 		_tcscpy(MAIN_FN_PATH, cust_path);
 		_tcscat(MAIN_FN_PATH, MAIN_FN);
 
@@ -1936,29 +2031,29 @@ void LoadDBPATH(bool cust, wchar_t* cust_path)
 	}
 	else
 	{
-		wchar_t buff[550];
-		wchar_t cur_dir[550];
-		_tgetdcwd(_getdrive(),cur_dir,sizeof(cur_dir));
+		wchar_t *cur_dir;
+		cur_dir = _tgetcwd(NULL,0);
+	
+		_tcscpy(cur_db_path,cur_dir);
+		_tcscat(cur_db_path,db_path);
 
 		_tcscpy(MAIN_FN_PATH,cur_dir);
-		_tcscat(MAIN_FN_PATH,TEXT("\\"));
 		_tcscat(MAIN_FN_PATH,db_path);
 		_tcscat(MAIN_FN_PATH,MAIN_FN);
-
-		_tcscpy(EXP_FN_PATH,cur_dir);
-		_tcscat(EXP_FN_PATH,TEXT("\\"));
+		
+		_tcscpy(EXP_FN_PATH, cur_dir);
 		_tcscat(EXP_FN_PATH,db_path);
 		_tcscat(EXP_FN_PATH,EXP_FN);
-
-		_tcscpy(MODS_FN_PATH,cur_dir);
-		_tcscat(MODS_FN_PATH,TEXT("\\"));
-		_tcscat(MODS_FN_PATH,db_path);
-		_tcscat(MODS_FN_PATH,MODS_FN);
-
+		
+		_tcscpy(MODS_FN_PATH, cur_dir);
+		_tcscat(MODS_FN_PATH, db_path);
+		_tcscat(MODS_FN_PATH, MODS_FN);
+		
 		_tcscpy(COVERS_DIR,cur_dir);
-		_tcscat(COVERS_DIR,TEXT("\\"));
-		_tcscat(COVERS_DIR,db_path);
-		_tcscat(COVERS_DIR,db_covers);
+		_tcscat(COVERS_DIR, db_path);
+		_tcscat(COVERS_DIR, db_covers);
+		
+		free(cur_dir);
 	}
 
 }
@@ -2004,19 +2099,36 @@ void Search_BTSZUKAJ()
 
 int GetLastIDDod()
 {
-	int ret_id = 0;
-	FILE *fs_exp;
-	fs_exp = _tfopen(EXP_FN_PATH,TEXT("rb"));
-	while (!(feof(fs_exp)))
+	struct _stat status;
+	if (_wstat(EXP_FN_PATH,&status))
 	{
-		fread(&exp_db,sizeof(exp_db),1,fs_exp);
-		if (ret_id < exp_db.ID)
+		if (status.st_size > 0)
 		{
-			ret_id = exp_db.ID;
+			int ret_id = 0;
+			LONGLONG offset = 0;
+			FILE *fs_exp;
+			fs_exp = _tfopen(EXP_FN_PATH,TEXT("rb"));
+			while (!(feof(fs_exp)))
+			{
+				fseek(fs_exp, offset, SEEK_SET);
+				fread(&exp_db,sizeof(exp_db),1,fs_exp);
+				if (ret_id < exp_db.ID)
+				{
+					ret_id = exp_db.ID;
+				}
+				offset = offset + sizeof(exp_db);
+			}
+			return ret_id;
+		}
+		else
+		{
+			return 0;
 		}
 	}
-	return ret_id;
-
+	else
+	{
+		return 0;
+	}
 
 }
 
@@ -2064,29 +2176,28 @@ void Del_rec_ExpDB(int item)
 }
 void OpenDB()
 {
-	//TODO: Napisac otwieranie / jesli istanieje/ lu tworzenioe nowej bazy danych za pomoca okna otwieranie nowego katalogu
+	//Napisac otwieranie / jesli istanieje/ lu tworzenioe nowej bazy danych za pomoca okna otwieranie nowego katalogu
 	BROWSEINFO dir_info;
 	dir_info.hwndOwner = MAIN_hWnd;
 	dir_info.pidlRoot = NULL;
 	dir_info.lpszTitle = TEXT("Podaj katalog z baz¹ danych w formacie MKGC");
 	dir_info.ulFlags = BIF_USENEWUI;
-	if (CoInitializeEx(NULL, COINIT_APARTMENTTHREADED) == S_OK)
+	if (SHBrowseForFolderW(&dir_info) != NULL)
 	{
-		if (SHBrowseForFolder(dir_info) != NULL)
+		struct _stat status;
+		if (_wstat(dir_info.pszDisplayName,&status) == 0)
 		{
-			struct _stat status;
-			if (_stat(dir_info.pszDisplayName,status) == 0)
+			LoadDBPATH(true,dir_info.pszDisplayName);
+			if (CheckDBExists() == -1)
 			{
-				LoadDBPATH(true,&dir_info.pszDisplayName);
-				if (CheckDBExist)
-				{
-					
-
-				}
+				CreateDBFN();
 			}
 		}
-
 	}
-
+}
+void ClearListCTRLS()
+{
+	ListView_DeleteAllItems(GetDlgItem(TAB_MODY, 10400));
+	ListView_DeleteAllItems(GetDlgItem(TAB_DODATKI, 10300));
 
 }
