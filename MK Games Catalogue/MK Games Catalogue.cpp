@@ -576,7 +576,52 @@ void Save_rec()
 }
 void Del_rec()
 {
-//TODO: Napisaæ kasowanie rekordu g³ownego i podrzêdnych
+	main_db.ID = 0;
+ 	FILE *plik;
+	plik = _tfopen(MAIN_FN_PATH,TEXT("r+b"));
+	fseek(plik,curPos,SEEK_SET); 
+	fwrite(&main_db,sizeof(struct MAIN_REC),1,plik);
+	fclose(plik);
+	
+	wchar_t *buff = new wchar_t;
+	_tcscpy(buff,cur_db_path);
+	_tcscat(buff,TEXT("MKGC.gc0"));
+	_trename(MAIN_FN_PATH,buff); 
+
+	plik = _tfopen(MAIN_FN_PATH,TEXT("wb"));
+	fclose(plik);
+	FILE *src_file;
+	src_file = _tfopen(buff,TEXT("rb"));
+	plik = _tfopen(MAIN_FN_PATH,TEXT("a+b"));
+	struct MAIN_REC main_buff;
+	LONGLONG i;
+	struct _stat status;
+	LONGLONG stop = 0;
+	if (_tstat(buff,&status))
+	{
+		stop = status.st_size;
+	}
+	for (i = 0; i < stop ; )
+	{
+		fseek(src_file,i,SEEK_SET);
+		fread(&main_buff,sizeof(struct MAIN_REC),1,src_file);
+		if (main_buff.ID == 0)
+		{
+			i = i + sizeof(struct MAIN_REC);
+		}
+		else
+		{
+			fwrite(&main_buff,sizeof(struct MAIN_REC),1,plik);
+			i = i + sizeof(struct MAIN_REC);
+		}
+	}
+	fclose(plik);
+	fclose(src_file);
+	_tremove(buff);
+	
+
+				
+
 
 }
 
@@ -1904,6 +1949,8 @@ INT_PTR CALLBACK MAIN_WND_PROC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 					break;
 				case 1020:
 					Del_rec();
+					curPos = 0;
+					FirstRec();
 					return (INT_PTR)TRUE;
 					break;
 				case 1035:
