@@ -33,6 +33,7 @@ int search_sel_id = 0; // okreœla wyszukany rekord w wyszukiwarce, który ma zost
 MAIN_REC main_db;
 MODS_REC mods_db;
 EXPANSIONS_REC exp_db;
+std::vector<MAIN_REC> main_wysz;
 std::vector <MODS_REC> mods_db_arr;
 std::vector <EXPANSIONS_REC> exp_db_arr;
 SETTINGS_REC sett_db;
@@ -44,6 +45,7 @@ HWND TAB_KINFO;
 HWND TAB_KODY;
 HWND TAB_MODY;
 HWND TAB_DODATKI;
+HWND DLG_WYSZ;
 bool new_mods_rec = false;
 bool new_exp_rec = false;
 bool new_main_rec = false;
@@ -119,6 +121,8 @@ int					GetLastIDDod(); // zwraca najwy¿sze id rekordu EXP_DB w pliku EXP_FN
 void				Del_rec_ModsDB(int item);
 void				Del_rec_ExpDB(int item);
 void				ClearListCTRLS();
+void				Refresh_SZUKAJ_LV();
+int					BrowseMAINForID(int id);
 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -1177,6 +1181,7 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 				if (DialogBox(hInst, MAKEINTRESOURCE(134), hWnd, EditMody_WndProc) == 10505)
 				{
 					Add_Mody();
+					//Save_rec();
 					
 				}
 				break;
@@ -1187,6 +1192,7 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 				if (DialogBox(hInst,MAKEINTRESOURCE(134),hWnd,EditMody_WndProc) == 10505)
 				{
 					Edit_Mody();
+					//Save_rec();
 				}
 				break;
 			case 10403:
@@ -1195,7 +1201,9 @@ INT_PTR CALLBACK Dlg_ModyWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPa
 				item = ListView_GetNextItem(GetDlgItem(hWnd,10400),-1,LVIS_SELECTED);
 				if (item != -1)
 				{
+					Save_rec();
 					Del_rec_ModsDB(item);
+					ReadRec(curPos);
 					Refresh_Mods();
 				}
 				break;
@@ -1314,6 +1322,7 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 				if (DialogBox(hInst, MAKEINTRESOURCE(135), hWnd, EditDodatki_WndProc) == 10607)
 				{
 					Add_Dod();
+					//Save_rec();
 					
 				}
 				break;
@@ -1324,6 +1333,7 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 				if (DialogBox(hInst,MAKEINTRESOURCE(135),hWnd,EditDodatki_WndProc) == 10607)
 				{
 					Edit_Dod();
+					//Save_rec();
 				}
 				break;
 			case 10303:
@@ -1332,7 +1342,9 @@ INT_PTR CALLBACK Dlg_DodatkiWndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM 
 				item = ListView_GetNextItem(GetDlgItem(hWnd,10300),-1,LVIS_SELECTED);
 				if (item != -1)
 				{
+					Save_rec();
 					Del_rec_ExpDB(item);
+					ReadRec(curPos);
 					Refresh_Dod();
 				}
 				break;
@@ -1474,15 +1486,14 @@ INT_PTR CALLBACK EditDodatki_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 int GetLastIDMody()
 {
 	struct _stat status;
-	if (_wstat(MODS_FN_PATH,&status))
+	if (_wstat(MODS_FN_PATH,&status) == 0)
 	{
 		if (status.st_size > 0)
 		{
 			int ret_id = 0;
-			LONGLONG offset = 0;
 			FILE *fs_mods;
 			fs_mods = _tfopen(MODS_FN_PATH,TEXT("rb"));
-			while (!(feof(fs_mods)))
+			for (LONGLONG offset = 0; offset < status.st_size; )
 			{
 				fseek(fs_mods,offset,SEEK_SET);
 				fread(&mods_db,sizeof(mods_db),1,fs_mods);
@@ -2112,12 +2123,63 @@ int wmId, wmEvent, i;
 	switch (message)
 	{
 	case WM_INITDIALOG:
-		//TODO:Napisaæ inicjalizacjê IDD_SZUKAJ - combo pole
+		DLG_WYSZ = hWnd;
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),0,TEXT("Tytu³"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),1,TEXT("Wydawca"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),2,TEXT("Dystrybutor"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),3,TEXT("Producent"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),4,TEXT("Gatunek"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),5,TEXT("Ocena"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),6,TEXT("Cena"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),7,TEXT("Nr Kat"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),8,TEXT("Platforma"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),9,TEXT("Noœnik"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),10,TEXT("WWW"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),11,TEXT("Premiera"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),12,TEXT("Opis"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),13,TEXT("Lista kodów"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),14,TEXT("Producent - WWW"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),15,TEXT("Producent - E-mail"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),16,TEXT("Producent - Adres"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),17,TEXT("Producent - Telefon"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),18,TEXT("Wydawca - WWW"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),19,TEXT("Wydawca - E-mail"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),20,TEXT("Wydawca - Adres"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),21,TEXT("Wydawca - Telefon"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),22,TEXT("Dystrybutor - WWW"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),23,TEXT("Dystrybutor - E-mail"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),24,TEXT("Dystrybutor - Adres"));
+		ComboBox_InsertString(GetDlgItem(hWnd,IDC_COMBO_SZPOLE),25,TEXT("Dystrybutor - Telefon"));
+		
+		HWND LV_hWnd;
+		LV_hWnd = GetDlgItem(hWnd,IDC_LIST_WYNIKI);
+		LVCOLUMN lv_col;
+		lv_col.mask = LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+		lv_col.iSubItem = 0;
+		lv_col.pszText = TEXT("Tytu³");
+		lv_col.cx = 50;
+		ListView_InsertColumn(LV_hWnd,0,&lv_col);
 
+		lv_col.iSubItem = 1;
+		lv_col.pszText = TEXT("Gatunek");
+		lv_col.cx = 50;
+		ListView_InsertColumn(LV_hWnd,1,&lv_col);
+
+		lv_col.iSubItem = 2;
+		lv_col.pszText = TEXT("Premiera");
+		lv_col.cx = 50;
+		ListView_InsertColumn(LV_hWnd,2,&lv_col);
+
+				
 		return (INT_PTR)TRUE;
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hWnd, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
 		switch (wmEvent)
 		{
 		case 0:
@@ -2125,37 +2187,443 @@ int wmId, wmEvent, i;
 			{
 			case BUTTON_SZUKAJ:
 				Search_BTSZUKAJ();
+				Refresh_SZUKAJ_LV();
 				break;
 			//TODO: Napisaæ obs³ugê zdarzeñ IDD_SZUKAJ -listview
 			default:
 				break;
 			}
+			
 		default:
 			break;
 		}
 	break;
+	case WM_NOTIFY:
+	switch (((LPNMHDR) lParam)->code)
+        {
+        case LVN_GETDISPINFO:
+            {
+                NMLVDISPINFO* plvdi = (NMLVDISPINFO*)lParam; 
+				int x;
+				x = plvdi->item.iItem;  
+
+                switch (plvdi->item.iSubItem)
+                {
+                case 0:
+					plvdi->item.pszText = main_wysz[x].tytul;
+                    break;
+
+                case 1:
+					plvdi->item.pszText = main_wysz[x].genre;
+                    break;
+
+                case 2:
+					plvdi->item.pszText = main_wysz[x].pubdate;
+                    break;
+
+                default:
+                    break;
+                }
+                return TRUE;
+            }
+		case NM_DBLCLK:
+			{
+				NMITEMACTIVATE *itemact = (NMITEMACTIVATE*)lParam;
+				ReadRec(BrowseMAINForID(main_wysz[itemact->iItem].ID));
+				break;
+			}
+      // More notifications...
+      }
+	/*default:
+		{
+			return DefDlgProc(hWnd,message,wParam,lParam);
+
+		}*/
 	}
 	return (INT_PTR)FALSE;
 }
 
 void Search_BTSZUKAJ()
 {
-	//TODO: Napisaæ proces wyszukiwania i umieszczania wyszukanych w listView.
+	main_wysz.clear();
+	int poz = SendMessage(GetDlgItem(DLG_WYSZ,IDC_COMBO_SZPOLE),CB_GETCURSEL ,NULL,NULL);
+	wchar_t *fraza = new wchar_t;
+	GetWindowText(GetDlgItem(DLG_WYSZ,IDC_EDIT_SZFRAZA),fraza,1024);
+	if (poz != CB_ERR)
+	{
+		MAIN_REC main_buff;
+		wchar_t *pdest;
+		int result;
+		FILE *plik;
+		plik = _tfopen(MAIN_FN_PATH,TEXT("rb"));
+		LONGLONG stop = 0;
+		LONGLONG x;
+		struct _stat status;
+		if (_wstat(MAIN_FN_PATH,&status) == 0)
+		{
+			stop = status.st_size;
+
+		}
+
+		switch (poz)
+		{
+		case 0:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.tytul,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 1:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.publisher,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 2:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.distributor,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 3:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.producer,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 4:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.genre,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 5:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.grade,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 6:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.price,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 7:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.nrkat,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 8:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.platform,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 9:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.medium,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 10:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.WWW,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 11:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.pubdate,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 12:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.desc,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 13:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.cheats,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 14:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.prod_www,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 15:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.prod_email,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 16:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.prod_adres,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 17:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.prod_tel,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 18:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.pub_www,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 19:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.pub_email,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 20:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.pub_adres,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 21:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.pub_tel,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 22:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.dist_www,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 23:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.dist_email,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 24:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.dist_adres,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		case 25:
+			for (x=0;x<stop; )
+			{
+				fseek(plik,x,SEEK_SET); 
+				fread(&main_buff,sizeof(struct MAIN_REC),1,plik);
+				pdest = wcsstr(main_buff.dist_tel,fraza);
+				if (pdest != NULL)
+				{
+					main_wysz.push_back(main_buff);  
+				}	
+				x = x + (sizeof(struct MAIN_REC));
+			}
+			break;
+		
+		}
+	}
+
 
 }
 
 int GetLastIDDod()
 {
 	struct _stat status;
-	if (_wstat(EXP_FN_PATH,&status))
+	if (_wstat(EXP_FN_PATH,&status) == 0)
 	{
 		if (status.st_size > 0)
 		{
 			int ret_id = 0;
-			LONGLONG offset = 0;
+			
 			FILE *fs_exp;
 			fs_exp = _tfopen(EXP_FN_PATH,TEXT("rb"));
-			while (!(feof(fs_exp)))
+			for (LONGLONG offset = 0; offset < status.st_size ; )
 			{
 				fseek(fs_exp, offset, SEEK_SET);
 				fread(&exp_db,sizeof(exp_db),1,fs_exp);
@@ -2182,43 +2650,84 @@ int GetLastIDDod()
 
 void Del_rec_ModsDB(int item)
 {
-	mods_db_arr[item].ID = -1;
-	std::vector <MODS_REC> mods_buff;
-	for (int i = 0; i < mods_db_arr.size(); i++)
+	FILE *mods_fn, *mods_src;
+	wchar_t *buff = new wchar_t;
+	MODS_REC mods_buff_s;
+	
+	_tcscpy(buff,cur_db_path);
+	_tcscat(buff,TEXT("MKGC_MODS.tmp"));
+
+	mods_fn = _tfopen(buff,TEXT("wb"));
+	fclose(mods_fn);
+	mods_fn = _tfopen(buff,TEXT("a+b"));
+	
+	mods_src = _tfopen(MODS_FN_PATH,TEXT("rb"));
+
+	struct _stat status;
+	LONGLONG stop = 0;
+	if (_wstat(MODS_FN_PATH,&status) == 0)
 	{
-		if (mods_db_arr[i].ID != -1)
+		stop = status.st_size;
+	}
+
+	for (LONGLONG i = 0; i < stop; )
+	{
+		fseek(mods_src,i,SEEK_SET);
+		fread(&mods_buff_s,sizeof(MODS_REC),1,mods_src);
+		if (mods_buff_s.ID != mods_db_arr[item].ID)
 		{
-			mods_buff.push_back(mods_db_arr[i]);
+			fwrite(&mods_buff_s,sizeof(MODS_REC),1,mods_fn);
 		}
-	}
-	mods_db_arr.clear();
+		i = i + sizeof(MODS_REC);
 
-	for (int i = 0; i < mods_buff.size(); i++)
-	{
-		mods_db_arr.push_back(mods_buff[i]);
 	}
+	fclose(mods_fn);
+	fclose(mods_src);
 
+	_tremove(MODS_FN_PATH);
+	_trename(buff,MODS_FN_PATH);
+
+	
 }
 
 void Del_rec_ExpDB(int item)
 {
-	exp_db_arr[item].ID = -1;
-	std::vector <EXPANSIONS_REC> exp_buff;
-	for (int i = 0; i < exp_db_arr.size(); i++)
+	FILE *exp_fn, *exp_src;
+	wchar_t *buff = new wchar_t;
+	EXPANSIONS_REC exp_buff_s;
+	
+	_tcscpy(buff,cur_db_path);
+	_tcscat(buff,TEXT("MKGC_EXP.tmp"));
+
+	exp_fn = _tfopen(buff,TEXT("wb"));
+	fclose(exp_fn);
+	exp_fn = _tfopen(buff,TEXT("a+b"));
+	
+	exp_src = _tfopen(EXP_FN_PATH,TEXT("rb"));
+
+	struct _stat status;
+	LONGLONG stop = 0;
+	if (_wstat(EXP_FN_PATH,&status) == 0)
 	{
-		if (exp_db_arr[i].ID != -1)
+		stop = status.st_size;
+	}
+
+	for (LONGLONG i = 0; i < stop; )
+	{
+		fseek(exp_src,i,SEEK_SET);
+		fread(&exp_buff_s,sizeof(EXPANSIONS_REC),1,exp_src);
+		if (exp_buff_s.ID != exp_db_arr[item].ID)
 		{
-			exp_buff.push_back(exp_db_arr[i]);
+			fwrite(&exp_buff_s,sizeof(EXPANSIONS_REC),1,exp_fn);
 		}
+		i = i + sizeof(EXPANSIONS_REC);
+
 	}
-	exp_db_arr.clear();
+	fclose(exp_fn);
+	fclose(exp_src);
 
-	for (int i = 0; i < exp_buff.size(); i++)
-	{
-		exp_db_arr.push_back(exp_buff[i]);
-	}
-
-
+	_tremove(EXP_FN_PATH);
+	_trename(buff,EXP_FN_PATH);
 
 }
 void OpenDB()
@@ -2246,5 +2755,50 @@ void ClearListCTRLS()
 {
 	ListView_DeleteAllItems(GetDlgItem(TAB_MODY, 10400));
 	ListView_DeleteAllItems(GetDlgItem(TAB_DODATKI, 10300));
+
+}
+
+void Refresh_SZUKAJ_LV()
+{
+	ListView_DeleteAllItems(GetDlgItem(DLG_WYSZ,IDC_LIST_WYNIKI));
+
+	for (int x= 0; x < main_wysz.size(); x++)
+	{
+		LVITEM lvitm;
+		lvitm.mask = LVIF_TEXT | LVIF_PARAM | LVIF_STATE;
+		lvitm.iItem = x;
+		lvitm.iSubItem = 0;
+		lvitm.state = 0;
+		lvitm.stateMask = 0;
+		lvitm.lParam = (LPARAM) &main_wysz[x];
+		lvitm.pszText = LPSTR_TEXTCALLBACK;
+		ListView_InsertItem(GetDlgItem(DLG_WYSZ,IDC_LIST_WYNIKI),&lvitm); 
+	}
+
+
+
+}
+
+int BrowseMAINForID(int id)
+{
+	FILE *main_fn;
+	struct MAIN_REC main_buff;
+	main_fn = _tfopen(MAIN_FN_PATH,TEXT("rb"));
+	struct _stat status;
+	LONGLONG stop = 0;
+	if (_wstat(MAIN_FN_PATH,&status) == 0)
+	{
+		stop = status.st_size;
+	}
+	for (LONGLONG i = 0; i < stop; )
+	{
+		fseek(main_fn,i,SEEK_SET);
+		fread(&main_buff,sizeof(MAIN_REC),1,main_fn);
+		if (main_buff.ID == id)
+		{
+			 return i;
+		}
+		i = i + sizeof(MAIN_REC);
+	}
 
 }
