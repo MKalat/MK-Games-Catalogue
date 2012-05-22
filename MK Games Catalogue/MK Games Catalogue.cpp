@@ -18,9 +18,9 @@
 #define MAX_MODS_REC 20
 #define MAX_EXP_REC 20
 #define SETT_FN TEXT("settings.cfg")
-#define MAIN_FN TEXT("MKGC.db")
-#define MODS_FN TEXT("MKGC_M.db")
-#define EXP_FN TEXT("MKGC_E.db")
+#define MAIN_FN TEXT("MKGC.mkgc")
+#define MODS_FN TEXT("MKGC_M.mkgc")
+#define EXP_FN TEXT("MKGC_E.mkgc")
 #define LANG_PL TEXT("PL.ln")
 #define LANG_EN TEXT("EN.ln")
 
@@ -687,11 +687,11 @@ void LastRec()
 void Load_pic()
 {
 	//Npsaæ ³adowanie zdjêcia ok³adki do bazy danych i na main form
-	wchar_t *buff;
+	wchar_t *buff = new wchar_t;
 	OPENFILENAME ofn;
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = MAIN_hWnd;
-	ofn.lpstrFilter = _TEXT("Bitmapy \0 *.bmp\0\0");
+	ofn.lpstrFilter = _TEXT("Bitmapy\0*.bmp\0\0");
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFile = buff;
 	ofn.nMaxFile = 1024;
@@ -767,7 +767,10 @@ int	ReadFromFile(long pos)
 						fread(&exp_db,sizeof(exp_db),1,exp_fs);
 						if (exp_db.IDMAIN == main_db.ID)
 						{
-							exp_db_arr.push_back(exp_db);
+							if (exp_db.ID != -1)
+							{
+								exp_db_arr.push_back(exp_db);
+							}
 						}
 						offset = offset + sizeof(exp_db);
 					}
@@ -786,7 +789,10 @@ int	ReadFromFile(long pos)
 						fread(&mods_db,sizeof(mods_db),1,mod_fs);
 						if (mods_db.IDMAIN == main_db.ID)
 						{
-							mods_db_arr.push_back(mods_db);					
+							if (mods_db.ID != -1)
+							{
+								mods_db_arr.push_back(mods_db);					
+							}
 						}
 
 						offset = offset + sizeof(mods_db);
@@ -1613,6 +1619,7 @@ long SearchLastPos()
 		}
 		offset = offset - sizeof(main_buff);
 
+		fclose(fs_db);
 		return offset;
 	}
 	else
@@ -2650,84 +2657,61 @@ int GetLastIDDod()
 
 void Del_rec_ModsDB(int item)
 {
-	FILE *mods_fn, *mods_src;
-	wchar_t *buff = new wchar_t;
-	MODS_REC mods_buff_s;
-	
-	_tcscpy(buff,cur_db_path);
-	_tcscat(buff,TEXT("MKGC_MODS.tmp"));
-
-	mods_fn = _tfopen(buff,TEXT("wb"));
-	fclose(mods_fn);
-	mods_fn = _tfopen(buff,TEXT("a+b"));
-	
-	mods_src = _tfopen(MODS_FN_PATH,TEXT("rb"));
-
 	struct _stat status;
+	struct MODS_REC mods_buff, mods_read;
+	mods_buff.ID = -1;
+
 	LONGLONG stop = 0;
 	if (_wstat(MODS_FN_PATH,&status) == 0)
 	{
 		stop = status.st_size;
 	}
-
-	for (LONGLONG i = 0; i < stop; )
+	FILE* mods_fnb;
+	mods_fnb = _tfopen(MODS_FN_PATH,_TEXT("r+b"));
+	for (LONGLONG offset = 0 ; offset < stop; )
 	{
-		fseek(mods_src,i,SEEK_SET);
-		fread(&mods_buff_s,sizeof(MODS_REC),1,mods_src);
-		if (mods_buff_s.ID != mods_db_arr[item].ID)
+		fseek(mods_fnb,offset,SEEK_SET);
+		fread(&mods_read,sizeof(MODS_REC),1,mods_fnb);
+		if (mods_read.ID == mods_db_arr[item].ID)
 		{
-			fwrite(&mods_buff_s,sizeof(MODS_REC),1,mods_fn);
+			fwrite(&mods_buff,sizeof(MODS_REC),1,mods_fnb);
 		}
-		i = i + sizeof(MODS_REC);
+		offset = offset + sizeof(MODS_REC);
+
 
 	}
-	fclose(mods_fn);
-	fclose(mods_src);
-
-	_tremove(MODS_FN_PATH);
-	_trename(buff,MODS_FN_PATH);
+	fclose(mods_fnb);
+	
 
 	
 }
 
 void Del_rec_ExpDB(int item)
 {
-	FILE *exp_fn, *exp_src;
-	wchar_t *buff = new wchar_t;
-	EXPANSIONS_REC exp_buff_s;
-	
-	_tcscpy(buff,cur_db_path);
-	_tcscat(buff,TEXT("MKGC_EXP.tmp"));
-
-	exp_fn = _tfopen(buff,TEXT("wb"));
-	fclose(exp_fn);
-	exp_fn = _tfopen(buff,TEXT("a+b"));
-	
-	exp_src = _tfopen(EXP_FN_PATH,TEXT("rb"));
-
 	struct _stat status;
+	struct EXPANSIONS_REC exp_buff, exp_read;
+	exp_buff.ID = -1;
+
 	LONGLONG stop = 0;
 	if (_wstat(EXP_FN_PATH,&status) == 0)
 	{
 		stop = status.st_size;
 	}
-
-	for (LONGLONG i = 0; i < stop; )
+	FILE* exp_fnb;
+	exp_fnb = _tfopen(EXP_FN_PATH,_TEXT("r+b"));
+	for (LONGLONG offset = 0 ; offset < stop; )
 	{
-		fseek(exp_src,i,SEEK_SET);
-		fread(&exp_buff_s,sizeof(EXPANSIONS_REC),1,exp_src);
-		if (exp_buff_s.ID != exp_db_arr[item].ID)
+		fseek(exp_fnb,offset,SEEK_SET);
+		fread(&exp_read,sizeof(EXPANSIONS_REC),1,exp_fnb);
+		if (exp_read.ID == exp_db_arr[item].ID)
 		{
-			fwrite(&exp_buff_s,sizeof(EXPANSIONS_REC),1,exp_fn);
+			fwrite(&exp_buff,sizeof(EXPANSIONS_REC),1,exp_fnb);
 		}
-		i = i + sizeof(EXPANSIONS_REC);
+		offset = offset + sizeof(EXPANSIONS_REC);
 
 	}
-	fclose(exp_fn);
-	fclose(exp_src);
-
-	_tremove(EXP_FN_PATH);
-	_trename(buff,EXP_FN_PATH);
+	fclose(exp_fnb);
+	
 
 }
 void OpenDB()
