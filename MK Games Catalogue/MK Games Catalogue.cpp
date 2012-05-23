@@ -687,23 +687,26 @@ void LastRec()
 void Load_pic()
 {
 	//Npsaæ ³adowanie zdjêcia ok³adki do bazy danych i na main form
-	wchar_t *buff = new wchar_t;
+	wchar_t filenam[1024];
 	OPENFILENAME ofn;
+	ofn.lpstrFile = filenam;
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = MAIN_hWnd;
-	ofn.lpstrFilter = _TEXT("Bitmapy\0*.bmp\0\0");
+	ofn.lpstrFilter = _TEXT("Bitmapy\0*.bmp\0");
 	ofn.nFilterIndex = 1;
-	ofn.lpstrFile = buff;
+	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = 1024;
 	ofn.lpstrTitle = _TEXT("Podaj plik bitamy do wczytania do programu MK Games Catalogue");
 	ofn.Flags = OFN_FILEMUSTEXIST;
 
-	if (GetOpenFileName(&ofn) != 0)
+	if (GetOpenFileName(&ofn) == TRUE)
 	{
+		wchar_t *buff = new wchar_t;
+		_itow(main_db.ID,buff,10);
 		wchar_t *dest = new wchar_t;
 		_tcscpy(dest,COVERS_DIR);
 		_tcscat(dest, buff);
-		CopyFile(buff,dest,FALSE);
+		CopyFile(filenam,dest,FALSE);
 		_tcscpy(main_db.pathtopic,dest);
 		Save_rec();
 	}
@@ -1971,11 +1974,11 @@ INT_PTR CALLBACK MAIN_WND_PROC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 					FirstRec();
 					return (INT_PTR)TRUE;
 					break;
-				case 1035:
+				case 1036:
 					Load_pic();
 					return (INT_PTR)TRUE;
 					break;
-				case 1036:
+				case 1037:
 					Del_pic();
 					return (INT_PTR)TRUE;
 				break;
