@@ -2,6 +2,14 @@
 // Microsoft Visual C++ generated include file.
 // Used by MK Games Catalogue.rc
 //
+/*
+ This software is licensed under terms of GNU GPL v.2 License.
+ Author : Marcin Ka³at
+ email	: support@mkalat.pl
+ www	: http://mkalat.pl
+
+
+*/
 #define IDC_MYICON                      2
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104

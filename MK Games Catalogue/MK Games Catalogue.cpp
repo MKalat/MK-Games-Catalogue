@@ -1,6 +1,16 @@
 // MK Games Catalogue.cpp : Defines the entry point for the application.
 //
 
+/*
+ This software is licensed under terms of GNU GPL v.2 License.
+ Author : Marcin Ka³at
+ email	: support@mkalat.pl
+ www	: http://mkalat.pl
+
+
+*/
+
+
 #include "stdafx.h"
 #include "MK Games Catalogue.h"
 #include "db_def_all.h"

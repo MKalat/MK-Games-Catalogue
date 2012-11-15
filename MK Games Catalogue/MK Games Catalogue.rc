@@ -364,14 +364,14 @@ END
 // remains consistent on all systems.
 107                     ICON                    "MK Games Catalogue.ico"
 108                     ICON                    "small.ico"
-IDI_ICON1               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\new_16x16.ico"
-IDI_ICON2               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\del_16x16.ico"
-IDI_ICON3               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\first_16x16.ico"
-IDI_ICON4               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\last_16x16.ico"
-IDI_ICON5               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\next_16x16.ico"
-IDI_ICON6               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\prev_16x16.ico"
-IDI_ICON7               ICON                    "D:\\RYSUNKI\\programy-db obrazki\\save_16x16.ico"
-IDI_ICON8               ICON                    "D:\\RYSUNKI\\MK_LOGO.ico"
+IDI_ICON1               ICON                    "new_16x16.ico"
+IDI_ICON2               ICON                    "del_16x16.ico"
+IDI_ICON3               ICON                    "first_16x16.ico"
+IDI_ICON4               ICON                    "last_16x16.ico"
+IDI_ICON5               ICON                    "next_16x16.ico"
+IDI_ICON6               ICON                    "prev_16x16.ico"
+IDI_ICON7               ICON                    "save_16x16.ico"
+IDI_ICON8               ICON                    "MK_LOGO.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
