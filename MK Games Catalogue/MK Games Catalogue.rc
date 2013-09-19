@@ -48,7 +48,7 @@ BEGIN
     COMBOBOX        1011,45,66,163,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        1012,45,94,56,12,ES_AUTOHSCROLL
     EDITTEXT        1013,45,107,163,12,ES_AUTOHSCROLL
-    LTEXT           "(C) Copyright Marcin Ka³at 2011.",-1,7,423,104,8
+    LTEXT           "(C) Copyright Marcin Ka³at 2011 - 2013.",-1,7,423,126,8
     PUSHBUTTON      "|<",1014,7,398,23,21,BS_ICON | NOT WS_TABSTOP
     PUSHBUTTON      "<",1015,33,398,24,21,BS_ICON | NOT WS_TABSTOP
     PUSHBUTTON      ">",1016,61,398,26,21,BS_ICON | NOT WS_TABSTOP
@@ -212,23 +212,23 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            128,-1,14,14,20,20
     LTEXT           "MK Games Catalogue, Version 1.0",-1,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C)  Marcin Kalat 2011 - 2012",-1,42,26,144,8
+    LTEXT           "Copyright (C)  Marcin Kalat 2011 - 2013",-1,42,26,144,8
     DEFPUSHBUTTON   "OK",1,168,153,50,14,WS_GROUP
     LTEXT           "Program do katalogowania gier komputerowych. Umozliwia zapisanie katalogowych informacji o danej grze, a takze kodów do danej gry. ",-1,42,41,165,78
 END
 
-IDD_SZUKAJ DIALOGEX 0, 0, 256, 295
+160 DIALOGEX 0, 0, 256, 295
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "MK Games Catalogue - Wyszukaj"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "SZUKAJ",BUTTON_SZUKAJ,189,47,50,14
-    LTEXT           "Szukaj",IDC_STATIC,7,9,22,8
-    EDITTEXT        IDC_EDIT_SZFRAZA,41,7,180,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBO_SZPOLE,41,30,123,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Pole",IDC_STATIC,7,33,14,8
-    CONTROL         "",IDC_LIST_WYNIKI,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,70,230,218
-    LTEXT           "Wyniki",IDC_STATIC,7,56,22,8
+    DEFPUSHBUTTON   "SZUKAJ",10803,189,47,50,14
+    LTEXT           "Szukaj",-1,7,9,22,8
+    EDITTEXT        10800,41,7,180,12,ES_AUTOHSCROLL
+    COMBOBOX        10801,41,30,123,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Pole",-1,7,33,14,8
+    CONTROL         "",10802,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,70,230,218
+    LTEXT           "Wyniki",-1,7,56,22,8
 END
 
 
@@ -304,7 +304,7 @@ BEGIN
         BOTTOMMARGIN, 127
     END
 
-    IDD_SZUKAJ, DIALOG
+    160, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 249
@@ -321,7 +321,7 @@ END
 // Version
 //
 
-IDR_VERSION2 VERSIONINFO
+164 VERSIONINFO
  FILEVERSION 1,0,0,1
  PRODUCTVERSION 1,0,0,1
  FILEFLAGSMASK 0x17L
@@ -364,14 +364,14 @@ END
 // remains consistent on all systems.
 107                     ICON                    "MK Games Catalogue.ico"
 108                     ICON                    "small.ico"
-IDI_ICON1               ICON                    "new_16x16.ico"
-IDI_ICON2               ICON                    "del_16x16.ico"
-IDI_ICON3               ICON                    "first_16x16.ico"
-IDI_ICON4               ICON                    "last_16x16.ico"
-IDI_ICON5               ICON                    "next_16x16.ico"
-IDI_ICON6               ICON                    "prev_16x16.ico"
-IDI_ICON7               ICON                    "save_16x16.ico"
-IDI_ICON8               ICON                    "MK_LOGO.ico"
+153                     ICON                    "new_16x16.ico"
+154                     ICON                    "del_16x16.ico"
+155                     ICON                    "first_16x16.ico"
+156                     ICON                    "last_16x16.ico"
+157                     ICON                    "next_16x16.ico"
+158                     ICON                    "prev_16x16.ico"
+159                     ICON                    "save_16x16.ico"
+163                     ICON                    "MK_LOGO.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -382,8 +382,8 @@ IDI_ICON8               ICON                    "MK_LOGO.ico"
 BEGIN
     POPUP "&Plik"
     BEGIN
-        MENUITEM "Otwórz baze danych",          ID_PLIK_ZARZ32782
-        MENUITEM "Wyszukaj",                    ID_PLIK_WY
+        MENUITEM "Otwórz baze danych",          32782
+        MENUITEM "Wyszukaj",                    32784
         MENUITEM SEPARATOR
         MENUITEM "&Nowy Rekord",                32771
         MENUITEM "&Zapisz Rekord",              32772

@@ -235,7 +235,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\del_16x16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\first_16x16.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\RYSUNKI\programy-db obrazki\first_16x16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\last_16x16.ico"
 				>
 			</File>
 			<File
@@ -259,6 +271,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MK_LOGO.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\new_16x16.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\RYSUNKI\programy-db obrazki\new_16x16.ico"
 				>
 			</File>
@@ -267,11 +287,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\next_16x16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\prev_16x16.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\RYSUNKI\programy-db obrazki\prev_16x16.ico"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\RYSUNKI\programy-db obrazki\save_16x16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\save_16x16.ico"
 				>
 			</File>
 			<File
